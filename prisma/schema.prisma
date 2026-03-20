@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  businesses    BusinessUser[]
+  receipts      Receipt[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  taxId       String?
+  address     String?
+  phone       String?
+  email       String?
+  logo        String?
+  signature   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       BusinessUser[]
+  receipts    Receipt[]
+  requesters  Requester[]
+}
+
+model BusinessUser {
+  id         String   @id @default(cuid())
+  userId     String
+  businessId String
+  role       String   @default("member")
+  user       User     @relation(fields: [userId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id])
+
+  @@unique([userId, businessId])
+}
+
+model Requester {
+  id         String    @id @default(cuid())
+  businessId String
+  name       String
+  position   String?
+  email      String?
+  business   Business  @relation(fields: [businessId], references: [id])
+  receipts   Receipt[]
+}
+
+model Receipt {
+  id             String        @id @default(cuid())
+  businessId     String
+  userId         String
+  requesterId    String?
+  type           String        @default("receipt")
+  receiptNumber  String?
+  issueDate      DateTime?
+  vendorName     String?
+  vendorTaxId    String?
+  vendorAddress  String?
+  currency       String        @default("THB")
+  totalAmount    Float         @default(0)
+  subtotal       Float         @default(0)
+  vat            Float         @default(0)
+  wht            Float         @default(0)
+  imageUrl       String?
+  status         String        @default("pending")
+  note           String?
+  emailSource    String?
+  driveFileId    String?
+  sheetsRowId    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  business       Business      @relation(fields: [businessId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  requester      Requester?    @relation(fields: [requesterId], references: [id])
+  items          ReceiptItem[]
+  documents      SupportingDoc[]
+}
+
+model ReceiptItem {
+  id          String  @id @default(cuid())
+  receiptId   String
+  description String
+  type        String  @default("service")
+  quantity    Float   @default(1)
+  unitPrice   Float   @default(0)
+  amount      Float   @default(0)
+  category    String?
+  subcategory String?
+  receipt     Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+}
+
+model SupportingDoc {
+  id        String  @id @default(cuid())
+  receiptId String
+  name      String
+  url       String
+  type      String?
+  receipt   Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+}
+
+model EmailScrapeJob {
+  id          String    @id @default(cuid())
+  userId      String
+  email       String
+  status      String    @default("idle")
+  lastRunAt   DateTime?
+  foundCount  Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

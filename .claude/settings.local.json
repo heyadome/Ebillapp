@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-eslint --src-dir --import-alias \"@/*\" --yes)",
       "Read(//Users/heyadome/Desktop/**)",
-      "Bash(npx create-next-app@latest ebillapp --typescript --tailwind --app --no-eslint --src-dir --import-alias \"@/*\" --yes)"
+      "Bash(npx create-next-app@latest ebillapp --typescript --tailwind --app --no-eslint --src-dir --import-alias \"@/*\" --yes)",
+      "Bash(cp -r /Users/heyadome/Desktop/ebillapp/* /Users/heyadome/Desktop/Ebillapp/)",
+      "Bash(cp -r /Users/heyadome/Desktop/ebillapp/.* /Users/heyadome/Desktop/Ebillapp/)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
