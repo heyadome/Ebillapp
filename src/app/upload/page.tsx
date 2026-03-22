@@ -3,35 +3,22 @@ import AppLayout from "@/components/AppLayout";
 import { useState, useRef, useCallback } from "react";
 import {
   Upload, Camera, FileImage, X, Loader2, CheckCircle2,
-  ChevronRight, ChevronLeft, Sparkles, AlertCircle, Plus, Trash2
+  ChevronRight, ChevronLeft, Sparkles, Plus, Trash2, CloudUpload, FileText
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Tab = "header" | "items" | "docs";
 
 interface LineItem {
-  id: string;
-  description: string;
-  type: string;
-  quantity: number;
-  unitPrice: number;
-  amount: number;
-  category: string;
+  id: string; description: string; type: string;
+  quantity: number; unitPrice: number; amount: number; category: string;
 }
 
 interface FormData {
-  type: string;
-  receiptNumber: string;
-  issueDate: string;
-  vendorName: string;
-  vendorTaxId: string;
-  vendorAddress: string;
-  currency: string;
-  totalAmount: number;
-  subtotal: number;
-  vat: number;
-  wht: number;
-  note: string;
+  type: string; receiptNumber: string; issueDate: string;
+  vendorName: string; vendorTaxId: string; vendorAddress: string;
+  currency: string; totalAmount: number; subtotal: number;
+  vat: number; wht: number; note: string;
 }
 
 const CATEGORIES = [
@@ -50,18 +37,9 @@ export default function UploadPage() {
   const [saving, setSaving] = useState(false);
   const [items, setItems] = useState<LineItem[]>([]);
   const [form, setForm] = useState<FormData>({
-    type: "receipt",
-    receiptNumber: "",
-    issueDate: "",
-    vendorName: "",
-    vendorTaxId: "",
-    vendorAddress: "",
-    currency: "THB",
-    totalAmount: 0,
-    subtotal: 0,
-    vat: 0,
-    wht: 0,
-    note: "",
+    type: "receipt", receiptNumber: "", issueDate: "", vendorName: "",
+    vendorTaxId: "", vendorAddress: "", currency: "THB",
+    totalAmount: 0, subtotal: 0, vat: 0, wht: 0, note: "",
   });
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -74,8 +52,7 @@ export default function UploadPage() {
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
+    e.preventDefault(); setDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
   }, [handleFile]);
@@ -84,65 +61,28 @@ export default function UploadPage() {
     if (!imageFile) return;
     setScanning(true);
     try {
-      const fd = new FormData();
-      fd.append("image", imageFile);
+      const fd = new FormData(); fd.append("image", imageFile);
       const res = await fetch("/api/ocr", { method: "POST", body: fd });
       const data = await res.json();
       if (data.result) {
         const r = data.result;
-        setForm((prev) => ({
-          ...prev,
-          type: r.type || prev.type,
-          receiptNumber: r.receiptNumber || prev.receiptNumber,
-          issueDate: r.issueDate || prev.issueDate,
-          vendorName: r.vendorName || prev.vendorName,
-          vendorTaxId: r.vendorTaxId || prev.vendorTaxId,
-          vendorAddress: r.vendorAddress || prev.vendorAddress,
-          totalAmount: r.totalAmount || prev.totalAmount,
-          subtotal: r.subtotal || prev.subtotal,
-          vat: r.vat || prev.vat,
-          wht: r.wht || prev.wht,
-        }));
-        if (r.items && r.items.length > 0) {
-          setItems(r.items.map((item: any, i: number) => ({
-            id: String(i),
-            description: item.description || "",
-            type: item.type || "service",
-            quantity: item.quantity || 1,
-            unitPrice: item.unitPrice || 0,
-            amount: item.amount || 0,
-            category: item.category || "",
-          })));
+        setForm(prev => ({ ...prev, type: r.type || prev.type, receiptNumber: r.receiptNumber || prev.receiptNumber, issueDate: r.issueDate || prev.issueDate, vendorName: r.vendorName || prev.vendorName, vendorTaxId: r.vendorTaxId || prev.vendorTaxId, vendorAddress: r.vendorAddress || prev.vendorAddress, totalAmount: r.totalAmount || prev.totalAmount, subtotal: r.subtotal || prev.subtotal, vat: r.vat || prev.vat, wht: r.wht || prev.wht }));
+        if (r.items?.length > 0) {
+          setItems(r.items.map((item: any, i: number) => ({ id: String(i), description: item.description || "", type: item.type || "service", quantity: item.quantity || 1, unitPrice: item.unitPrice || 0, amount: item.amount || 0, category: item.category || "" })));
         }
-        setScanDone(true);
-        setTab("header");
+        setScanDone(true); setTab("header");
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setScanning(false);
-    }
+    } catch (e) { console.error(e); }
+    finally { setScanning(false); }
   };
 
-  const addItem = () => {
-    setItems((prev) => [...prev, {
-      id: String(Date.now()),
-      description: "",
-      type: "service",
-      quantity: 1,
-      unitPrice: 0,
-      amount: 0,
-      category: "",
-    }]);
-  };
+  const addItem = () => setItems(prev => [...prev, { id: String(Date.now()), description: "", type: "service", quantity: 1, unitPrice: 0, amount: 0, category: "" }]);
 
   const updateItem = (id: string, key: keyof LineItem, value: any) => {
-    setItems((prev) => prev.map((item) => {
+    setItems(prev => prev.map(item => {
       if (item.id !== id) return item;
       const updated = { ...item, [key]: value };
-      if (key === "quantity" || key === "unitPrice") {
-        updated.amount = updated.quantity * updated.unitPrice;
-      }
+      if (key === "quantity" || key === "unitPrice") updated.amount = updated.quantity * updated.unitPrice;
       return updated;
     }));
   };
@@ -150,397 +90,206 @@ export default function UploadPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch("/api/receipts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          items,
-          imageUrl: imagePreview,
-        }),
-      });
+      const res = await fetch("/api/receipts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, items, imageUrl: imagePreview }) });
       const data = await res.json();
-      if (data.id) {
-        router.push(`/receipts/${data.id}`);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
+      if (data.id) router.push(`/receipts/${data.id}`);
+    } catch (e) { console.error(e); }
+    finally { setSaving(false); }
   };
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "header", label: "ข้อมูลหัวบิล" },
-    { key: "items", label: "รายการค่าใช้จ่าย" },
-    { key: "docs", label: "หลักฐานเพิ่มเติม" },
-  ];
+  const fmt = (n: number) => new Intl.NumberFormat("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>อัปโหลดใบเสร็จ</h1>
-          <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            ถ่ายรูปหรืออัปโหลดใบเสร็จ แล้วให้ AI ดึงข้อมูลให้อัตโนมัติ
-          </p>
+      <div className="h-[calc(100vh-100px)] min-h-[600px] animate-fade-in flex flex-col pt-2 pb-6 px-1 lg:px-4">
+        
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>สแกนบิล</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Upload Zone */}
-          <div className="lg:col-span-2 space-y-4">
-            <div
-              className={`upload-zone rounded-2xl p-6 text-center cursor-pointer ${dragging ? "dragging" : ""}`}
-              style={{ background: "var(--card)", minHeight: "280px" }}
-              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={handleDrop}
-              onClick={() => fileRef.current?.click()}
-            >
-              {imagePreview ? (
-                <div className="relative">
-                  <img src={imagePreview} alt="preview" className="w-full rounded-xl object-contain max-h-64" />
-                  <button
-                    className="absolute top-2 right-2 p-1 rounded-full"
-                    style={{ background: "rgba(0,0,0,0.6)" }}
-                    onClick={(e) => { e.stopPropagation(); setImagePreview(null); setImageFile(null); setScanDone(false); }}
-                  >
-                    <X size={14} color="white" />
-                  </button>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+          
+          {/* Main Upload Zone (Left side taking up more space) */}
+          <div className="lg:col-span-8 flex flex-col gap-4 h-full">
+             <div className="flex-1 card p-6 lg:p-10 flex flex-col justify-center items-center relative overflow-hidden" 
+                  style={{ background: "white", borderRadius: "24px" }}>
+                
+                <div className={`w-full max-w-2xl h-full min-h-[400px] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all duration-300 relative ${dragging ? "border-blue-500 bg-blue-50" : "border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-blue-300"}`}
+                     onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                     onDragLeave={() => setDragging(false)} onDrop={handleDrop}>
+                     
+                     {imagePreview ? (
+                       <div className="w-full h-full p-4 relative flex items-center justify-center">
+                         <img src={imagePreview} alt="preview" className="max-w-full max-h-full object-contain rounded-xl shadow-sm" />
+                         <div className="absolute top-6 right-6 flex gap-2">
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md text-slate-700 hover:text-blue-600 transition-colors"
+                              onClick={handleScan} disabled={scanning}>
+                              {scanning ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
+                            </button>
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md text-slate-700 hover:text-red-600 transition-colors"
+                              onClick={(e) => { e.stopPropagation(); setImagePreview(null); setImageFile(null); setScanDone(false); }}>
+                              <X size={20} />
+                            </button>
+                         </div>
+                       </div>
+                     ) : (
+                       <div className="text-center px-6 pointer-events-none">
+                         <div className="mx-auto w-24 h-24 mb-6 rounded-full flex items-center justify-center bg-blue-50">
+                           <CloudUpload size={48} className="text-blue-600" />
+                         </div>
+                         <h3 className="text-2xl font-bold text-slate-800 mb-2">อัปโหลดรูปภาพหรือไฟล์ PDF</h3>
+                         <p className="text-slate-500 mb-8 max-w-sm mx-auto">รองรับไฟล์ JPG, PNG, HEIC รูปแบบ PDF และเอกสารขนาดไม่เกิน 50 MB</p>
+                         
+                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pointer-events-auto">
+                           <button className="btn-primary flex items-center justify-center gap-2 px-8 py-3 rounded-full text-base font-semibold shadow-xl shadow-blue-500/20"
+                             onClick={() => fileRef.current?.click()}>
+                             เลือกไฟล์
+                           </button>
+                           <button className="btn-secondary flex items-center justify-center gap-2 px-8 py-3 rounded-full text-base font-semibold bg-white"
+                             onClick={() => fileRef.current?.click()}>
+                             ถ่ายภาพจากกล้อง
+                           </button>
+                         </div>
+                       </div>
+                     )}
+                     <input ref={fileRef} type="file" className="hidden" accept="image/*,.pdf"
+                            onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full py-8">
-                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: "rgba(0,212,255,0.1)" }}>
-                    <Upload size={28} style={{ color: "var(--accent)" }} />
-                  </div>
-                  <p className="font-medium mb-2" style={{ color: "var(--foreground)" }}>วางไฟล์หรือคลิกเพื่อเลือก</p>
-                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>รองรับ JPG, PNG, HEIC, WebP, PDF</p>
-                  <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>ขนาดไม่เกิน 10 MB</p>
+
+                {/* Status Indicator */}
+                <div className="mt-6 flex flex-col sm:flex-row items-center justify-between w-full max-w-2xl px-2 gap-4">
+                   <div className="flex items-center gap-3 bg-green-50 text-green-700 px-4 py-2 rounded-xl text-sm font-semibold opacity-0 transition-opacity duration-300" style={{ opacity: scanDone ? 1 : 0 }}>
+                     <CheckCircle2 size={18} /> สแกนข้อมูลเสร็จสิ้น
+                   </div>
+                   <div className="flex items-center gap-4 text-sm font-semibold text-slate-500">
+                     <div className="flex items-center gap-1.5"><FileText size={16}/> สแกนฟรี: 8 บิล</div>
+                   </div>
                 </div>
-              )}
-              <input ref={fileRef} type="file" className="hidden" accept="image/*,.pdf"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
-            </div>
 
-            {/* Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                className="flex items-center justify-center gap-2 p-3 rounded-xl text-sm transition-colors"
-                style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                onClick={() => fileRef.current?.click()}
-              >
-                <Camera size={16} /> ถ่ายรูป
-              </button>
-              <button
-                className="flex items-center justify-center gap-2 p-3 rounded-xl text-sm transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ background: "rgba(0,212,255,0.12)", color: "var(--accent)", border: "1px solid rgba(0,212,255,0.35)", boxShadow: "0 0 12px rgba(0,212,255,0.15)" }}
-                disabled={!imageFile || scanning}
-                onClick={handleScan}
-              >
-                {scanning ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                {scanning ? "กำลังสแกน..." : "สแกน AI"}
-              </button>
-            </div>
-
-            {scanDone && (
-              <div className="flex items-center gap-2 p-3 rounded-xl animate-fade-in"
-                style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)" }}>
-                <CheckCircle2 size={16} style={{ color: "#10b981" }} />
-                <span className="text-sm" style={{ color: "#10b981" }}>สแกนสำเร็จ! ตรวจสอบข้อมูลด้านขวา</span>
-              </div>
-            )}
+             </div>
           </div>
 
-          {/* Form */}
-          <div className="lg:col-span-3 rounded-2xl overflow-hidden"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-            {/* Tabs */}
-            <div className="flex border-b" style={{ borderColor: "var(--card-border)" }}>
-              {tabs.map(({ key, label }, idx) => (
-                <button key={key}
-                  className="flex-1 py-3 text-sm font-medium transition-colors relative"
-                  style={{
-                    color: tab === key ? "var(--accent)" : "var(--muted-foreground)",
-                    background: "transparent"
-                  }}
-                  onClick={() => setTab(key)}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="w-5 h-5 rounded-full text-xs flex items-center justify-center"
-                      style={{
-                        background: tab === key ? "var(--accent)" : "var(--muted)",
-                        color: tab === key ? "white" : "var(--muted-foreground)"
-                      }}>
-                      {idx + 1}
-                    </span>
-                    {label}
-                  </span>
-                  {tab === key && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: "var(--accent)" }} />
-                  )}
-                </button>
-              ))}
-            </div>
+          {/* Right Panel (Narrow sidebar for form) */}
+          <div className="lg:col-span-4 flex flex-col h-full bg-white rounded-[24px] border shadow-sm overflow-hidden" style={{ borderColor: "var(--card-border)" }}>
+             
+             <div className="p-6 border-b" style={{ borderColor: 'var(--card-border)' }}>
+               <h3 className="text-lg font-bold text-slate-800">รายละเอียดบิล</h3>
+             </div>
 
-            <div className="p-5">
-              {/* Tab 1: Header */}
-              {tab === "header" && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>ประเภทเอกสาร</label>
-                      <select
-                        value={form.type}
-                        onChange={(e) => setForm({ ...form, type: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                      >
-                        <option value="receipt">ใบเสร็จรับเงิน</option>
-                        <option value="invoice">ใบกำกับภาษี</option>
-                        <option value="voucher">ใบรับรองแทนใบเสร็จ</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>เลขที่เอกสาร</label>
-                      <input
-                        value={form.receiptNumber}
-                        onChange={(e) => setForm({ ...form, receiptNumber: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                        placeholder="เลขที่ใบเสร็จ/ใบกำกับภาษี"
-                      />
-                    </div>
-                  </div>
+             <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+               
+               {/* Progress indicator */}
+               <div className="flex items-center gap-4 mb-6">
+                 <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                   <div className="h-full bg-blue-600 rounded-full" style={{ width: tab === "header" ? "33%" : tab === "items" ? "66%" : "100%" }}></div>
+                 </div>
+                 <span className="text-xs font-bold text-slate-500 shrink-0">
+                    {tab === "header" ? "1" : tab === "items" ? "2" : "3"} / 3
+                 </span>
+               </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>วันที่ออกเอกสาร</label>
-                      <input
-                        type="date"
-                        value={form.issueDate}
-                        onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>สกุลเงิน</label>
-                      <select
-                        value={form.currency}
-                        onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                      >
-                        <option value="THB">THB — บาทไทย</option>
-                        <option value="USD">USD — ดอลลาร์</option>
-                        <option value="EUR">EUR — ยูโร</option>
-                      </select>
-                    </div>
-                  </div>
+               {/* Large Amount Display (like screenshot) */}
+               <div className="mb-8 text-center py-6 bg-slate-50 rounded-2xl border border-slate-100">
+                  <p className="text-sm font-semibold text-slate-500 mb-1">ยอดรวมทั้งสิ้น</p>
+                  <h2 className="text-4xl font-bold text-blue-600">฿ {form.totalAmount ? fmt(form.totalAmount) : "0.00"}</h2>
+               </div>
 
-                  <div>
-                    <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>ชื่อผู้ขาย / ร้านค้า</label>
-                    <input
-                      value={form.vendorName}
-                      onChange={(e) => setForm({ ...form, vendorName: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                      style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                      placeholder="ชื่อร้านค้า / บริษัท"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               {tab === "header" && (
+                 <div className="space-y-5 animate-fade-in">
                     <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>เลขประจำตัวผู้เสียภาษี</label>
-                      <input
-                        value={form.vendorTaxId}
-                        onChange={(e) => setForm({ ...form, vendorTaxId: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                        placeholder="1234567890123"
-                      />
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">ชื่อผู้ขาย / ร้านค้า</label>
+                      <input value={form.vendorName} onChange={(e) => setForm({ ...form, vendorName: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white" placeholder="—" />
                     </div>
-                    <div>
-                      <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>ยอดรวมทั้งสิ้น (บาท)</label>
-                      <input
-                        type="number"
-                        value={form.totalAmount || ""}
-                        onChange={(e) => setForm({ ...form, totalAmount: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                        style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                        placeholder="0.00"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {[
-                      { key: "subtotal", label: "ก่อนภาษี" },
-                      { key: "vat", label: "VAT 7%" },
-                      { key: "wht", label: "หัก ณ ที่จ่าย" },
-                    ].map(({ key, label }) => (
-                      <div key={key}>
-                        <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>{label}</label>
-                        <input
-                          type="number"
-                          value={(form as any)[key] || ""}
-                          onChange={(e) => setForm({ ...form, [key]: parseFloat(e.target.value) || 0 })}
-                          className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                          style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                          placeholder="0.00"
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">วันที่</label>
+                        <input type="date" value={form.issueDate} onChange={(e) => setForm({ ...form, issueDate: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" />
                       </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <label className="block text-xs mb-1.5" style={{ color: "var(--muted-foreground)" }}>หมายเหตุ</label>
-                    <textarea
-                      value={form.note}
-                      onChange={(e) => setForm({ ...form, note: e.target.value })}
-                      rows={2}
-                      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none"
-                      style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                      placeholder="หมายเหตุเพิ่มเติม..."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 2: Items */}
-              {tab === "items" && (
-                <div className="space-y-3">
-                  {items.length === 0 && (
-                    <div className="text-center py-8" style={{ color: "var(--muted-foreground)" }}>
-                      <p className="text-sm">ยังไม่มีรายการ</p>
-                      <p className="text-xs mt-1">คลิก "เพิ่มรายการ" หรือใช้ AI สแกนใบเสร็จ</p>
-                    </div>
-                  )}
-                  {items.map((item) => (
-                    <div key={item.id} className="p-3 rounded-xl space-y-2"
-                      style={{ background: "var(--muted)", border: "1px solid var(--card-border)" }}>
-                      <div className="flex gap-2">
-                        <input
-                          value={item.description}
-                          onChange={(e) => updateItem(item.id, "description", e.target.value)}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
-                          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                          placeholder="รายละเอียด"
-                        />
-                        <button onClick={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}>
-                          <Trash2 size={16} style={{ color: "#ef4444" }} />
-                        </button>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">เลขที่บิล</label>
+                        <input value={form.receiptNumber} onChange={(e) => setForm({ ...form, receiptNumber: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="—" />
                       </div>
-                      <div className="grid grid-cols-4 gap-2">
-                        <input
-                          type="number"
-                          value={item.quantity}
-                          onChange={(e) => updateItem(item.id, "quantity", parseFloat(e.target.value) || 1)}
-                          className="px-2 py-1.5 rounded-lg text-xs outline-none text-center"
-                          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                          placeholder="จำนวน"
-                        />
-                        <input
-                          type="number"
-                          value={item.unitPrice}
-                          onChange={(e) => updateItem(item.id, "unitPrice", parseFloat(e.target.value) || 0)}
-                          className="px-2 py-1.5 rounded-lg text-xs outline-none text-center"
-                          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                          placeholder="ราคา/หน่วย"
-                        />
-                        <div className="px-2 py-1.5 rounded-lg text-xs text-center"
-                          style={{ background: "var(--card)", color: "var(--accent)", border: "1px solid var(--card-border)" }}>
-                          {item.amount.toLocaleString()}
-                        </div>
-                        <select
-                          value={item.category}
-                          onChange={(e) => updateItem(item.id, "category", e.target.value)}
-                          className="px-2 py-1.5 rounded-lg text-xs outline-none"
-                          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                        >
-                          <option value="">หมวดหมู่</option>
-                          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">ยอดรวม (฿)</label>
+                        <input type="number" value={form.totalAmount || ""} onChange={(e) => setForm({ ...form, totalAmount: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="0.00" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">ประเภท</label>
+                        <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm">
+                          <option value="receipt">ใบเสร็จ</option>
+                          <option value="invoice">ใบกำกับภาษี</option>
                         </select>
                       </div>
                     </div>
-                  ))}
-                  <button
-                    onClick={addItem}
-                    className="w-full flex items-center justify-center gap-2 p-3 rounded-xl text-sm transition-colors"
-                    style={{ background: "var(--muted)", color: "var(--accent)", border: "2px dashed var(--card-border)" }}
-                  >
-                    <Plus size={16} /> เพิ่มรายการ
-                  </button>
+                 </div>
+               )}
 
-                  {items.length > 0 && (
-                    <div className="flex justify-between items-center pt-2 border-t" style={{ borderColor: "var(--card-border)" }}>
-                      <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>รวม</span>
-                      <span className="font-bold" style={{ color: "var(--accent)" }}>
-                        {items.reduce((s, i) => s + i.amount, 0).toLocaleString()} {form.currency}
-                      </span>
+               {tab === "items" && (
+                 <div className="space-y-4 animate-fade-in">
+                   <div className="flex items-center justify-between mb-2">
+                     <label className="block text-sm font-semibold text-slate-700">รายการสินค้าย่อย</label>
+                     <button onClick={addItem} className="text-xs font-bold text-blue-600 flex items-center gap-1"><Plus size={14}/> เพิ่ม</button>
+                   </div>
+                   {items.length === 0 && <p className="text-sm text-center text-slate-400 py-6">ไม่มีรายการย่อย</p>}
+                   {items.map((item, idx) => (
+                     <div key={item.id} className="p-3 bg-slate-50 rounded-xl space-y-3 relative group">
+                        <button onClick={() => setItems(prev => prev.filter(i => i.id !== item.id))} className="absolute right-2 top-2 p-1.5 rounded-md bg-white text-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14}/></button>
+                        <div>
+                          <input value={item.description} onChange={(e) => updateItem(item.id, "description", e.target.value)} className="w-full bg-transparent text-sm font-semibold outline-none text-slate-700 placeholder:font-normal" placeholder="ชื่อรายการ..." />
+                        </div>
+                        <div className="flex gap-2 items-center border-t border-slate-200 pt-3">
+                           <input type="number" value={item.amount} onChange={(e) => updateItem(item.id, "amount", parseFloat(e.target.value) || 0)} className="w-16 shrink-0 bg-white border border-slate-200 rounded-md px-2 py-1 text-xs text-center font-bold" placeholder="฿0" />
+                           <select value={item.category} onChange={(e) => updateItem(item.id, "category", e.target.value)} className="flex-1 bg-white border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-600 outline-none">
+                             <option value="">เลือกหมวดหมู่...</option>
+                             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                           </select>
+                        </div>
+                     </div>
+                   ))}
+                 </div>
+               )}
+
+               {tab === "docs" && (
+                 <div className="space-y-4 animate-fade-in text-center py-6">
+                    <div className="w-16 h-16 mx-auto bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+                      <FileImage size={24} className="text-slate-400" />
                     </div>
-                  )}
-                </div>
-              )}
+                    <p className="text-sm font-bold text-slate-700">แนบหลักฐานเพิ่มเติม (เลือกได้)</p>
+                    <p className="text-xs text-slate-500 mb-4 px-4">เช่น สลิปโอนเงิน หรือเอกสารประกอบการเบิกจ่าย</p>
+                    <button className="btn-secondary rounded-full px-6 py-2 text-sm mx-auto">เลือกไฟล์แนบ</button>
+                 </div>
+               )}
 
-              {/* Tab 3: Docs */}
-              {tab === "docs" && (
-                <div className="text-center py-8">
-                  <FileImage size={40} className="mx-auto mb-3 opacity-30" style={{ color: "var(--muted-foreground)" }} />
-                  <p className="text-sm" style={{ color: "var(--foreground)" }}>แนบหลักฐานเพิ่มเติม</p>
-                  <p className="text-xs mt-1 mb-4" style={{ color: "var(--muted-foreground)" }}>สูงสุด 5 ไฟล์</p>
-                  <button
-                    className="flex items-center gap-2 mx-auto px-4 py-2 rounded-xl text-sm"
-                    style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}
-                  >
-                    <Upload size={14} /> เลือกไฟล์
+               <div className="mt-8"></div>
+             </div>
+
+             {/* Footer Actions Sticky at Bottom */}
+             <div className="p-6 border-t bg-slate-50" style={{ borderColor: 'var(--card-border)' }}>
+                {tab !== "docs" ? (
+                  <button className="w-full btn-primary py-3.5 rounded-xl font-bold text-sm mb-3 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                    onClick={() => { const o: Tab[] = ["header","items","docs"]; const i = o.indexOf(tab); if (i < o.length-1) setTab(o[i+1]); }}>
+                    ถัดไป <ChevronRight size={16} />
+                  </button>
+                ) : (
+                  <button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-sm mb-3 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50"
+                    onClick={handleSave} disabled={saving || !form.vendorName}>
+                    {saving ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                    {saving ? "กำลังบันทึก..." : "ยืนยันข้อมูล"}
+                  </button>
+                )}
+                
+                <div className="text-center">
+                  <button className="text-xs font-bold text-red-500 hover:text-red-600 py-2 inline-block">
+                    ยกเลิก / ทิ้ง
                   </button>
                 </div>
-              )}
-            </div>
+             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between p-5 border-t" style={{ borderColor: "var(--card-border)" }}>
-              <button
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm"
-                style={{ color: "var(--muted-foreground)" }}
-                onClick={() => {
-                  const tabOrder: Tab[] = ["header", "items", "docs"];
-                  const idx = tabOrder.indexOf(tab);
-                  if (idx > 0) setTab(tabOrder[idx - 1]);
-                }}
-                disabled={tab === "header"}
-              >
-                <ChevronLeft size={16} /> ก่อนหน้า
-              </button>
-
-              {tab !== "docs" ? (
-                <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm"
-                  style={{ background: "var(--accent)",  }}
-                  onClick={() => {
-                    const tabOrder: Tab[] = ["header", "items", "docs"];
-                    const idx = tabOrder.indexOf(tab);
-                    if (idx < tabOrder.length - 1) setTab(tabOrder[idx + 1]);
-                  }}
-                >
-                  ถัดไป <ChevronRight size={16} />
-                </button>
-              ) : (
-                <button
-                  className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-90 disabled:opacity-50"
-                  style={{ background: "rgba(0,212,255,0.12)", color: "var(--accent)", border: "1px solid rgba(0,212,255,0.35)", boxShadow: "0 0 12px rgba(0,212,255,0.15)" }}
-                  onClick={handleSave}
-                  disabled={saving || !form.vendorName}
-                >
-                  {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
-                  {saving ? "กำลังบันทึก..." : "บันทึกใบเสร็จ"}
-                </button>
-              )}
-            </div>
           </div>
         </div>
+
       </div>
     </AppLayout>
   );

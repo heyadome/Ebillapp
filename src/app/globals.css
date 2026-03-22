@@ -1,248 +1,159 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ETHER_OS Color Palette ── */
-  --background: #06060f;
-  --foreground: #c8d8f0;
-  --card: #09091c;
-  --card-border: #16163a;
-  --accent: #00d4ff;           /* cyan primary */
-  --accent-hover: #00b0d4;
-  --accent-secondary: #df40ff; /* magenta secondary */
-  --muted: #0e0e28;
-  --muted-foreground: #445577;
-  --success: #00ff99;
-  --warning: #ffaa00;
-  --danger: #ff2266;
+  --background: #f9fafb;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --accent: #0052FF;
+  --accent-hover: #0043D2;
+  --accent-secondary: #8b5cf6;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
   --sidebar-width: 260px;
-  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', Consolas, monospace;
-
-  /* glow helpers */
-  --glow-cyan: rgba(0, 212, 255, 0.18);
-  --glow-magenta: rgba(223, 64, 255, 0.18);
-  --glow-green: rgba(0, 255, 153, 0.18);
 }
-
-/* Desktop sidebar margin — toggled by data attribute on main */
-@media (min-width: 1024px) {
-  main[data-sidebar-collapsed="false"] { margin-left: 260px; }
-  main[data-sidebar-collapsed="true"]  { margin-left: 72px; }
-}
-
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
-html {
-  height: 100%;
-  background: var(--background);
-}
+html { height: 100%; background: var(--background); }
 
 body {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: var(--background);
-  background-image: radial-gradient(circle, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--card); }
-::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
 /* ── Animations ── */
-@keyframes shimmer {
-  0%   { background-position: -1000px 0; }
-  100% { background-position:  1000px 0; }
-}
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes slideIn {
-  from { transform: translateX(-20px); opacity: 0; }
+  from { transform: translateX(-16px); opacity: 0; }
   to   { transform: translateX(0);     opacity: 1; }
-}
-
-@keyframes pulse-glow-cyan {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.5); }
-  50%       { box-shadow: 0 0 0 8px rgba(0, 212, 255, 0); }
-}
-
-@keyframes scanline {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
 }
 
 .animate-fade-in  { animation: fadeIn  0.3s ease forwards; }
 .animate-slide-in { animation: slideIn 0.3s ease forwards; }
-.glow-accent      { animation: pulse-glow-cyan 2s infinite; }
-.animate-blink    { animation: blink 1.5s ease-in-out infinite; }
 
-/* ── Card glow on hover ── */
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+}
 .card-hover {
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   border: 1px solid var(--card-border);
 }
 .card-hover:hover {
-  border-color: rgba(0, 212, 255, 0.35);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.08), inset 0 0 20px rgba(0, 212, 255, 0.03);
-}
-
-/* ── Glass effect (updated) ── */
-.glass {
-  background: rgba(9, 9, 28, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--card-border);
-}
-
-/* ── Cyan gradient text ── */
-.gradient-text {
-  background: linear-gradient(135deg, #00d4ff, #df40ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ── Monospace util ── */
-.font-mono { font-family: var(--font-mono) !important; }
-
-/* ── Cyan glow border ── */
-.border-cyan {
-  border: 1px solid rgba(0, 212, 255, 0.3) !important;
-  box-shadow: 0 0 12px rgba(0, 212, 255, 0.08);
-}
-
-/* ── Status dot ── */
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--success);
-  box-shadow: 0 0 6px var(--success);
-  animation: blink 2s ease-in-out infinite;
-  display: inline-block;
-}
-
-/* ── Progress bar base ── */
-.progress-track {
-  background: var(--card-border);
-  border-radius: 9999px;
-  overflow: hidden;
-  height: 3px;
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.08);
 }
 
 /* ── Upload zone ── */
 .upload-zone {
-  border: 1px dashed var(--card-border);
+  border: 2px dashed var(--card-border);
   transition: all 0.3s ease;
+  border-radius: 16px;
 }
 .upload-zone:hover, .upload-zone.dragging {
   border-color: var(--accent);
-  background: rgba(0, 212, 255, 0.04);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.06);
+  background: rgba(59,130,246,0.03);
 }
 
-/* ── App frame: full screen on mobile, 96% centered frame on desktop ── */
-.app-frame {
-  width: 100%;
-  height: 100vh;
+/* ── Status badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
 }
 
-@media (min-width: 1024px) {
-  .app-frame {
-    width: 96vw;
-    max-width: 1800px;
-    height: 96vh;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--card-border);
-    box-shadow:
-      0 0 0 1px rgba(0, 212, 255, 0.06),
-      0 0 40px rgba(0, 212, 255, 0.06),
-      0 32px 80px rgba(0, 0, 0, 0.6);
-  }
-}
-
-/* ── Content frame: max-width + padding per breakpoint ── */
+/* ── Content frame ── */
 .content-frame {
-  width: 96%;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 0 0;
+  padding: 20px 16px;
 }
-
 @media (min-width: 1024px) {
-  .content-frame {
-    padding: 24px 0 0;
-  }
+  .content-frame { padding: 28px 32px; }
 }
 
-/* ── Feature card hover/active glow ── */
-.feature-card {
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-}
-.feature-card:hover {
-  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.05)) !important;
-  border-color: rgba(0,212,255,0.3) !important;
-  box-shadow: 0 0 16px rgba(0,212,255,0.1) !important;
-}
-.feature-card:active {
-  background: linear-gradient(135deg, rgba(0,212,255,0.28), rgba(0,212,255,0.10)) !important;
-  border-color: rgba(0,212,255,0.5) !important;
-  box-shadow: 0 0 24px rgba(0,212,255,0.18), inset 0 0 16px rgba(0,212,255,0.07) !important;
-  transform: scale(0.97);
+/* ── Sidebar layout ── */
+@media (min-width: 1024px) {
+  main[data-sidebar-collapsed="false"] { margin-left: 260px; }
+  main[data-sidebar-collapsed="true"]  { margin-left: 72px; }
 }
 
-/* ── Cyan primary button ── */
+/* ── Button styles ── */
 .btn-primary {
   background: var(--accent);
-  color: #000;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: white;
+  font-weight: 600;
   border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
   transition: all 0.2s ease;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+  cursor: pointer;
 }
 .btn-primary:hover {
   background: var(--accent-hover);
-  box-shadow: 0 0 28px rgba(0, 212, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.35);
 }
 
-/* ── Cyber border (dashed cyan corner style) ── */
-.card-cyber {
-  position: relative;
+.btn-secondary {
+  background: var(--card);
+  color: var(--foreground);
+  font-weight: 500;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: var(--muted);
+  border-color: #d1d5db;
+}
+
+/* ── Input fields ── */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
   border: 1px solid var(--card-border);
   background: var(--card);
+  color: var(--foreground);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
-.card-cyber::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(0,212,255,0.05) 0%, transparent 60%);
-  pointer-events: none;
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+.input-field::placeholder {
+  color: var(--muted-foreground);
 }

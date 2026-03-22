@@ -3,26 +3,26 @@ import Sidebar from "./Sidebar";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Bell, Menu, LayoutDashboard, Receipt, Upload, Mail, TrendingUp } from "lucide-react";
+import { Bell, Menu, Search, LayoutDashboard, Receipt, Upload, Mail, TrendingUp } from "lucide-react";
 
 const mobileTabItems = [
-  { href: "/dashboard", label: "หน้าหลัก",  icon: LayoutDashboard },
-  { href: "/receipts",  label: "ใบเสร็จ",    icon: Receipt },
-  { href: "/upload",    label: "อัปโหลด",    icon: Upload },
-  { href: "/email",     label: "อีเมล",      icon: Mail },
-  { href: "/reports",   label: "รายงาน",    icon: TrendingUp },
+  { href: "/dashboard", label: "สรุปภาพรวม",  icon: LayoutDashboard },
+  { href: "/receipts",  label: "ค่าใช้จ่าย",   icon: Receipt },
+  { href: "/upload",    label: "สแกนบิล",      icon: Upload },
+  { href: "/email",     label: "อีเมล",        icon: Mail },
+  { href: "/reports",   label: "รายงาน",       icon: TrendingUp },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [mobileOpen, setMobileOpen]       = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
   return (
-    <div className="app-frame">
-      <div className="flex h-full overflow-hidden" style={{ background: "var(--background)" }}>
+    <div className="h-full">
+      <div className="flex h-full" style={{ background: "var(--background)" }}>
 
-        {/* ── Desktop sidebar only ── */}
+        {/* Desktop sidebar */}
         <Sidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
@@ -30,82 +30,74 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         />
 
         <main
-          className="flex-1 flex flex-col min-w-0 overflow-hidden"
+          className="flex-1 flex flex-col min-w-0"
           style={{ transition: "margin-left 0.3s" }}
           data-sidebar-collapsed={sidebarCollapsed ? "true" : "false"}
         >
-
-          {/* ── Top Bar ── */}
+          {/* Top Bar */}
           <header
-            className="flex items-center gap-3 px-4 flex-shrink-0"
+            className="flex items-center gap-3 px-4 lg:px-6 flex-shrink-0"
             style={{
-              background: "rgba(9,9,28,0.95)",
+              background: "var(--card)",
               borderBottom: "1px solid var(--card-border)",
-              backdropFilter: "blur(12px)",
-              minHeight: "56px",
+              minHeight: "64px",
             }}
           >
-            {/* Hamburger — mobile only (for Settings/Business drawer) */}
+            {/* Hamburger — mobile only */}
             <button
-              className="lg:hidden p-2 rounded-lg"
-              style={{ color: "var(--muted-foreground)", border: "1px solid var(--card-border)" }}
+              className="lg:hidden p-2 rounded-xl"
+              style={{ color: "var(--muted-foreground)" }}
               onClick={() => setMobileOpen(true)}
             >
-              <Menu size={16} />
+              <Menu size={20} />
             </button>
 
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <span className="status-dot lg:hidden" />
-              <span
-                className="font-bold tracking-widest text-sm lg:text-base"
-                style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
-              >
-                BILLSCAN<span style={{ color: "var(--muted-foreground)" }}>_</span>AI
+            {/* Logo — mobile only */}
+            <div className="lg:hidden flex items-center gap-2">
+              <span className="font-bold text-base" style={{ color: "var(--foreground)" }}>
+                The Precision Curator
               </span>
             </div>
 
-            <div className="hidden lg:flex items-center gap-2 ml-2">
-              <span className="status-dot" />
-              <span className="text-xs" style={{ color: "var(--success)", fontFamily: "var(--font-mono)" }}>ONLINE</span>
+            {/* Search bar — desktop */}
+            <div className="hidden lg:flex items-center gap-2 flex-1 max-w-md px-4 py-2.5 rounded-xl"
+              style={{ background: "var(--muted)", border: "1px solid var(--card-border)" }}>
+              <Search size={16} style={{ color: "var(--muted-foreground)" }} />
+              <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>ค้นหาใบเสร็จ, ผู้ขาย...</span>
             </div>
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
-                className="relative p-2 rounded-lg"
-                style={{ color: "var(--muted-foreground)", border: "1px solid var(--card-border)", background: "var(--card)" }}
+                className="relative p-2 rounded-xl transition-colors hover:bg-gray-100"
+                style={{ color: "var(--muted-foreground)" }}
               >
-                <Bell size={16} />
-                <span
-                  className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full"
-                  style={{ background: "var(--accent-secondary)", boxShadow: "0 0 6px var(--accent-secondary)" }}
-                />
+                <Bell size={20} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border-2 border-white"
+                  style={{ background: "var(--danger)" }} />
               </button>
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                style={{
-                  background: "var(--muted)",
-                  border: "1px solid var(--accent)",
-                  color: "var(--accent)",
-                  fontFamily: "var(--font-mono)",
-                  boxShadow: "0 0 10px rgba(0,212,255,0.2)",
-                }}
-              >ผ</div>
+              <div className="flex items-center gap-3 pl-3 lg:pl-4 lg:border-l" style={{ borderColor: 'var(--card-border)' }}>
+                <div className="hidden lg:block text-right cursor-pointer">
+                  <div className="text-sm font-bold" style={{ color: "var(--foreground)" }}>ณราธร รัตนพงษ์</div>
+                  <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>แอดมิน</div>
+                </div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold cursor-pointer"
+                  style={{ background: "var(--accent)", color: "white" }}>
+                  ณ
+                </div>
+              </div>
             </div>
           </header>
 
-          {/* ── Mobile horizontal tab navigation (reference-style) ── */}
-          <div
-            className="lg:hidden flex-shrink-0 flex overflow-x-auto"
+          {/* Mobile horizontal tab navigation */}
+          <div className="lg:hidden flex-shrink-0 flex overflow-x-auto"
             style={{
-              gap: "8px",
-              padding: "10px 12px",
-              background: "rgba(9,9,28,0.98)",
+              gap: "4px",
+              padding: "8px 12px",
+              background: "var(--card)",
               borderBottom: "1px solid var(--card-border)",
               scrollbarWidth: "none",
-              msOverflowStyle: "none",
             }}
           >
             {mobileTabItems.map(({ href, label, icon: Icon }) => {
@@ -116,16 +108,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   href={href}
                   className="flex-shrink-0 flex items-center transition-all"
                   style={{
-                    gap: "8px",
-                    padding: "10px 16px",
-                    borderRadius: "12px",
-                    background: active ? "var(--accent)" : "var(--card)",
-                    color: active ? "#000" : "var(--muted-foreground)",
-                    border: active ? "none" : "1px solid var(--card-border)",
-                    fontFamily: "var(--font-mono)",
+                    gap: "6px",
+                    padding: "8px 14px",
+                    borderRadius: "10px",
+                    background: active ? "var(--accent)" : "transparent",
+                    color: active ? "white" : "var(--muted-foreground)",
                     fontSize: "13px",
-                    letterSpacing: "0.03em",
-                    fontWeight: 700,
+                    fontWeight: active ? 600 : 400,
                     textDecoration: "none",
                     whiteSpace: "nowrap",
                   }}
@@ -137,13 +126,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             })}
           </div>
 
-          {/* ── Page content ── */}
-          <div className="flex-1 overflow-y-auto pb-6">
+          {/* Page content */}
+          <div className="flex-1 overflow-y-auto">
             <div className="content-frame">
               {children}
             </div>
           </div>
-
         </main>
       </div>
     </div>

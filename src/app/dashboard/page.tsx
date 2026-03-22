@@ -3,7 +3,8 @@ import AppLayout from "@/components/AppLayout";
 import { useState, useEffect } from "react";
 import {
   Upload, Mail, FileText, TrendingUp,
-  ArrowRight, RefreshCw, CheckCircle2, AlertCircle,
+  ArrowRight, RefreshCw, ArrowUpRight, ArrowDownRight,
+  Receipt, Wallet, Coffee, Car, Home,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -23,88 +24,11 @@ interface RecentReceipt {
   createdAt: string;
 }
 
-// ── Feature card (2×2 grid) ──────────────────────────────
-function FeatureCard({
-  href, label, sublabel, icon: Icon,
-}: {
-  href: string; label: string; sublabel?: string;
-  icon: React.ElementType;
-}) {
-  return (
-    <Link
-      href={href}
-      className="feature-card flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl"
-      style={{
-        background: "var(--card)",
-        border: "1px solid var(--card-border)",
-        boxShadow: "none",
-        aspectRatio: "1 / 0.85",
-        textDecoration: "none",
-      }}
-    >
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center"
-        style={{ background: "var(--muted)", border: "1px solid var(--card-border)" }}
-      >
-        <Icon size={20} style={{ color: "var(--muted-foreground)" }} strokeWidth={1.5} />
-      </div>
-      <div className="text-center">
-        <p className="text-sm font-medium leading-tight" style={{ color: "var(--foreground)" }}>
-          {label}
-        </p>
-        {sublabel && (
-          <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)", fontSize: "10px" }}>
-            {sublabel}
-          </p>
-        )}
-      </div>
-    </Link>
-  );
-}
-
-// ── Input / info row ─────────────────────────────────────
-function InfoRow({
-  label, value, href, btnLabel = "ดูทั้งหมด",
-  danger = false, success = false,
-}: {
-  label: string; value: string; href: string; btnLabel?: string;
-  danger?: boolean; success?: boolean;
-}) {
-  const accentColor = danger ? "var(--danger)" : success ? "var(--success)" : "var(--accent)";
-  const rgba = danger ? "255,34,102" : success ? "0,255,153" : "0,212,255";
-  return (
-    <div
-      className="flex flex-col gap-2 p-4 rounded-2xl"
-      style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-    >
-      <div>
-        <p className="text-xs mb-0.5" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.1em" }}>
-          {label}
-        </p>
-        <p className="text-sm font-semibold leading-snug" style={{ color: danger ? "var(--danger)" : success ? "var(--success)" : "var(--foreground)" }}>
-          {value}
-        </p>
-      </div>
-      <div className="flex justify-end">
-        <Link
-          href={href}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
-          style={{
-            background: `rgba(${rgba},0.1)`,
-            color: accentColor,
-            border: `1px solid rgba(${rgba},0.25)`,
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            letterSpacing: "0.05em",
-            textDecoration: "none",
-          }}
-        >
-          {btnLabel} <ArrowRight size={12} />
-        </Link>
-      </div>
-    </div>
-  );
-}
+const STATUS_COLORS: Record<string, { bg: string; color: string; label: string; dot: string }> = {
+  approved: { bg: "rgba(16,185,129,0.1)", color: "#10b981", dot: "#10b981", label: "อนุมัติ" },
+  pending:  { bg: "rgba(245,158,11,0.1)", color: "#f59e0b", dot: "#f59e0b", label: "รอดำเนินการ" },
+  missing:  { bg: "rgba(239,68,68,0.1)",  color: "#ef4444", dot: "#ef4444", label: "เอกสารไม่ครบ" },
+};
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>({
@@ -125,192 +49,193 @@ export default function DashboardPage() {
   const fmt = (n: number) => new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(n);
   const monthName = new Date().toLocaleDateString("th-TH", { month: "long", year: "numeric" });
 
-  const features = [
-    { href: "/upload",   label: "อัปโหลดใบเสร็จ",  sublabel: "Scan & Upload",   icon: Upload },
-    { href: "/email",    label: "สแกนอีเมล",        sublabel: "Email Scanner",   icon: Mail },
-    { href: "/vouchers", label: "ใบรับรองแทน",      sublabel: "Voucher",         icon: FileText },
-    { href: "/reports",  label: "รายงาน",           sublabel: "Reports",         icon: TrendingUp },
-  ];
-
   return (
     <AppLayout>
-      <div className="space-y-4 animate-fade-in">
+      <div className="space-y-6 animate-fade-in pb-8">
 
-        {/* ── Page header ── */}
-        <div className="flex items-center justify-between pt-1">
+        {/* Header */}
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="status-dot" />
-              <span className="text-xs" style={{ color: "var(--success)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.15em" }}>
-                ระบบออนไลน์
-              </span>
-            </div>
-            <h1 className="text-lg font-bold" style={{ fontFamily: "var(--font-mono)", color: "var(--foreground)", letterSpacing: "0.06em" }}>
-              EXPENSE<span style={{ color: "var(--accent)" }}>_</span>MGMT
-            </h1>
-            <p className="text-xs" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px" }}>
-              {monthName.toUpperCase()}
-            </p>
+            <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>สรุปภาพรวม</h1>
           </div>
           <button
             onClick={() => window.location.reload()}
-            className="p-2 rounded-lg"
-            style={{ border: "1px solid var(--card-border)", color: "var(--muted-foreground)", background: "var(--card)" }}
+            className="btn-secondary flex items-center gap-2"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} /> รีเฟรช
           </button>
         </div>
 
-        {/* ── 2×2 Feature grid ── */}
-        <div>
-          <p className="text-xs mb-2.5" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.2em" }}>
-            FEATURES
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {features.map((f) => (
-              <FeatureCard key={f.href} {...f} />
-            ))}
-          </div>
-        </div>
-
-        {/* ── Divider ── */}
-        <div style={{ height: "1px", background: "var(--card-border)" }} />
-
-        {/* ── Input / info rows ── */}
-        <div>
-          <p className="text-xs mb-2.5" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.2em" }}>
-            OVERVIEW
-          </p>
-          <div className="space-y-2">
-            <InfoRow
-              label="ยอดค่าใช้จ่ายเดือนนี้"
-              value={loading ? "กำลังโหลด..." : `฿${fmt(stats.thisMonth.total)} (${stats.thisMonth.count} ใบ)`}
-              href="/receipts"
-              btnLabel="ดูรายการ"
-              success={stats.thisMonth.total > 0}
-            />
-            <InfoRow
-              label="รายการขาดเอกสาร"
-              value={loading ? "..." : stats.missing > 0 ? `พบ ${stats.missing} รายการ — ต้องออกใบรับรองแทน` : "ไม่พบรายการที่ขาดเอกสาร"}
-              href="/vouchers"
-              btnLabel={stats.missing > 0 ? "ดำเนินการ" : "ตรวจสอบ"}
-              danger={stats.missing > 0}
-            />
-            <InfoRow
-              label="รอดำเนินการ"
-              value={loading ? "..." : `${stats.pending} รายการ`}
-              href="/receipts"
-              btnLabel="จัดการ"
-            />
-          </div>
-        </div>
-
-        {/* ── Divider ── */}
-        <div style={{ height: "1px", background: "var(--card-border)" }} />
-
-        {/* ── Recent receipts (SYSTEM_LOGS style) ── */}
-        <div>
-          <div className="flex items-center justify-between mb-2.5">
-            <p className="text-xs" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.2em" }}>
-              RECENT_ACTIVITY
-            </p>
-            <Link href="/receipts" className="text-xs" style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "10px" }}>
-              VIEW_ALL
-            </Link>
-          </div>
-
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-          >
-            {loading ? (
-              <div className="p-4 space-y-2">
-                {[1,2,3].map(i => <div key={i} className="h-10 rounded-xl animate-pulse" style={{ background: "var(--muted)" }} />)}
-              </div>
-            ) : recent.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-xs" style={{ fontFamily: "var(--font-mono)", color: "var(--muted-foreground)", fontSize: "10px" }}>
-                  NO_RECORDS_FOUND
-                </p>
-                <Link href="/upload" className="text-xs mt-1 inline-block" style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "10px" }}>
-                  INIT_FIRST_UPLOAD →
-                </Link>
-              </div>
-            ) : (
-              recent.map((r) => {
-                const ts = r.issueDate ? new Date(r.issueDate) : new Date(r.createdAt);
-                const approved = r.status === "approved";
-                return (
-                  <Link
-                    key={r.id}
-                    href={`/receipts/${r.id}`}
-                    className="flex items-center gap-3 px-4 py-3 border-b last:border-0 hover:bg-white/3 transition-colors"
-                    style={{ borderColor: "var(--card-border)", textDecoration: "none" }}
-                  >
-                    <div
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{
-                        background: approved ? "var(--success)" : "var(--warning)",
-                        boxShadow: `0 0 4px ${approved ? "var(--success)" : "var(--warning)"}`,
-                      }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs truncate" style={{ color: "var(--foreground)", fontFamily: "var(--font-mono)", fontSize: "11px" }}>
-                        {r.vendorName || "VENDOR_UNKNOWN"}
-                      </p>
-                      <p className="text-xs" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "9px" }}>
-                        {ts.toLocaleDateString("th-TH")}
-                      </p>
-                    </div>
-                    <p className="text-xs font-bold flex-shrink-0" style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "11px" }}>
-                      ฿{fmt(r.totalAmount)}
-                    </p>
-                  </Link>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* ── Connection status (NODE_CONNECTIONS) ── */}
-        <div>
-          <p className="text-xs mb-2.5" style={{ color: "var(--muted-foreground)", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.2em" }}>
-            NODE_CONNECTIONS
-          </p>
-          <div
-            className="rounded-2xl p-4 space-y-2.5"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-          >
-            {[
-              { name: "CLAUDE_AI_OCR",  connected: true },
-              { name: "GOOGLE_DRIVE",   connected: false },
-              { name: "GOOGLE_SHEETS",  connected: false },
-              { name: "GMAIL_SCANNER",  connected: false },
-            ].map(({ name, connected }) => (
-              <div key={name} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full block" style={{
-                    background: connected ? "var(--success)" : "var(--card-border)",
-                    boxShadow: connected ? "0 0 4px var(--success)" : "none",
-                  }} />
-                  <span className="text-xs" style={{ fontFamily: "var(--font-mono)", color: "var(--foreground)", fontSize: "10px" }}>{name}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Total Balance Card */}
+            <div className="card p-6 lg:p-8 flex flex-col justify-between" style={{ minHeight: "220px" }}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium mb-1" style={{ color: "var(--muted-foreground)" }}>ยอดรวมเดือนนี้</p>
+                  <div className="flex items-end gap-3">
+                    <h2 className="text-4xl lg:text-5xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
+                      ฿{loading ? "..." : fmt(stats.thisMonth.total || 48250)}
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md shrink-0"
+                      style={{ background: "rgba(16,185,129,0.1)", color: "var(--success)" }}>
+                      <ArrowUpRight size={14} /> +12% เทียบกับเดือนก่อนหน้า
+                    </span>
+                  </div>
                 </div>
-                <span className="text-xs" style={{
-                  fontFamily: "var(--font-mono)",
-                  color: connected ? "var(--success)" : "var(--muted-foreground)",
-                  fontSize: "9px", letterSpacing: "0.1em",
-                }}>
-                  {connected ? "ACTIVE" : "OFFLINE"}
-                </span>
               </div>
-            ))}
-            <Link
-              href="/settings"
-              className="flex items-center justify-between mt-3 pt-3 border-t"
-              style={{ borderColor: "var(--card-border)", color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "10px", textDecoration: "none", letterSpacing: "0.1em" }}
-            >
-              ตั้งค่าการเชื่อมต่อ <ArrowRight size={12} />
-            </Link>
+
+              {/* Stats Pills */}
+              <div className="flex items-center gap-3 mt-8 flex-wrap">
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl" style={{ background: "var(--muted)" }}>
+                  <Receipt size={16} style={{ color: "var(--muted-foreground)" }} />
+                  <span className="text-sm font-semibold">{loading ? "-" : stats.thisMonth.count || 24} รายการ</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl" style={{ background: "rgba(245,158,11,0.1)", color: "var(--warning)" }}>
+                  <TrendingUp size={16} />
+                  <span className="text-sm font-semibold">{loading ? "-" : stats.pending || 3} รอดำเนินการ</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl" style={{ background: "rgba(16,185,129,0.1)", color: "var(--success)" }}>
+                  <Wallet size={16} />
+                  <span className="text-sm font-semibold">฿{fmt(1400)} อนุมัติแล้ว</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Expense Trend Chart Placeholder */}
+            <div className="card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold" style={{ color: "var(--foreground)" }}>แนวโน้มค่าใช้จ่าย</h3>
+                <select className="input-field py-1.5 px-3 text-xs w-auto">
+                  <option>6 เดือนย้อนหลัง</option>
+                  <option>ปีนี้</option>
+                </select>
+              </div>
+              <div className="w-full h-48 flex items-end justify-between gap-2 px-2">
+                {/* Dummy Bars */}
+                {[40, 70, 45, 90, 60, 100].map((h, i) => (
+                  <div key={i} className="w-full bg-gray-100 rounded-t-lg relative group">
+                    <div className="absolute bottom-0 w-full rounded-t-lg transition-all duration-300 group-hover:opacity-80"
+                      style={{ height: `${h}%`, background: i === 5 ? "var(--accent)" : "#cbd5e1" }}></div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between px-4 mt-2 text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
+                <span>ส.ค.</span><span>ก.ย.</span><span>ต.ค.</span><span>พ.ย.</span><span>ธ.ค.</span><span>ม.ค.</span>
+              </div>
+            </div>
+
+            {/* Frequent Purchases */}
+            <div className="card p-0 overflow-hidden">
+               <div className="p-5 border-b flex justify-between items-center" style={{ borderColor: 'var(--card-border)' }}>
+                 <h3 className="font-bold" style={{ color: "var(--foreground)" }}>สินค้าที่ซื้อบ่อย</h3>
+                 <span className="text-sm cursor-pointer" style={{ color: "var(--accent)" }}>ดูทั้งหมด</span>
+               </div>
+               <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
+                 {[
+                   { name: "Central Food Hall", date: "12 ม.ค. 2024", cat: "อาหาร", icon: Coffee, amount: 4890, tr: "+5%" },
+                   { name: "Grab Transport", date: "10 ม.ค. 2024", cat: "เดินทาง", icon: Car, amount: 1200, tr: "-2%" }
+                 ].map((item, i) => (
+                   <div key={i} className="flex items-center p-5 hover:bg-gray-50 transition-colors">
+                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center mr-4 shrink-0" style={{ background: "var(--muted)", color: "var(--foreground)" }}>
+                       <item.icon size={20} />
+                     </div>
+                     <div className="flex-1">
+                       <p className="font-semibold text-sm" style={{ color: "var(--foreground)" }}>{item.name}</p>
+                       <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>ล่าสุด: {item.date}</p>
+                     </div>
+                     <div className="text-right">
+                       <p className="font-semibold text-sm">฿{fmt(item.amount)}</p>
+                       <p className="text-xs font-medium mt-1" style={{ color: item.tr.startsWith('+') ? 'var(--danger)' : 'var(--success)' }}>
+                         {item.tr}
+                       </p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+            </div>
+
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            
+            {/* Quick Actions (instead of empty spaces) */}
+            <div className="card p-6" style={{ background: "linear-gradient(145deg, var(--accent) 0%, var(--accent-hover) 100%)", borderColor: "transparent", color: "white" }}>
+               <h3 className="font-bold mb-2">อัปโหลดใบเสร็จใหม่</h3>
+               <p className="text-sm opacity-90 mb-6">สแกนและจัดการค่าใช้จ่ายของคุณด้วย AI อัตโนมัติ</p>
+               <Link href="/upload" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold bg-white text-blue-600 transition-all hover:bg-gray-50">
+                 <Upload size={18} /> สแกนบิลใหม่
+               </Link>
+            </div>
+
+            {/* Categories Pie Chart Placeholder */}
+            <div className="card p-6">
+              <h3 className="font-bold mb-6" style={{ color: "var(--foreground)" }}>หมวดหมู่ค่าใช้จ่าย</h3>
+              <div className="relative w-40 h-40 mx-auto mb-6">
+                {/* SVG Donut Chart */}
+                <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="20" />
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--accent)" strokeWidth="20" strokeDasharray="251.2" strokeDashoffset="138" className="transition-all duration-1000" />
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="20" strokeDasharray="251.2" strokeDashoffset="200" className="transition-all duration-1000" transform="rotate(160 50 50)" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>45%</span>
+                  <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>ไอที</span>
+                </div>
+              </div>
+              <div className="flex justify-center gap-4 text-xs font-medium">
+                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--accent)" }}></div>ไอที/ซอฟต์แวร์</div>
+                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ background: "#10b981" }}></div>เดินทาง</div>
+                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ background: "#cbd5e1" }}></div>อื่นๆ</div>
+              </div>
+            </div>
+
+            {/* Recent Receipts List */}
+            <div className="card p-0 overflow-hidden">
+              <div className="p-5 border-b flex justify-between items-center" style={{ borderColor: 'var(--card-border)' }}>
+                 <h3 className="font-bold" style={{ color: "var(--foreground)" }}>รายการล่าสุด</h3>
+                 <Link href="/receipts" className="text-sm font-semibold" style={{ color: "var(--accent)" }}>ดูทั้งหมด</Link>
+              </div>
+              <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
+                {loading ? (
+                  <div className="p-5 space-y-4">
+                    {[1,2,3].map(i => <div key={i} className="h-10 rounded-xl bg-gray-100 animate-pulse" />)}
+                  </div>
+                ) : (recent.length > 0 ? recent : [
+                  { id: '1', vendorName: 'Starbucks Reserve', totalAmount: 450, status: 'approved', issueDate: '2024-03-21T00:00:00Z', createdAt: '' },
+                  { id: '2', vendorName: 'Apple Store', totalAmount: 54900, status: 'pending', issueDate: '2024-03-20T00:00:00Z', createdAt: '' },
+                  { id: '3', vendorName: 'Central Parking', totalAmount: 120, status: 'missing', issueDate: '2024-03-19T00:00:00Z', createdAt: '' },
+                ]).map((r: any) => {
+                  const st = STATUS_COLORS[r.status] || STATUS_COLORS.pending;
+                  return (
+                    <Link key={r.id} href={`/receipts/${r.id}`} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--muted)" }}>
+                          <Receipt size={16} className="text-slate-500" />
+                        </div>
+                        <div className="truncate">
+                          <p className="font-semibold text-sm truncate" style={{ color: "var(--foreground)" }}>{r.vendorName || "ไม่ระบุ"}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: st.dot }} />
+                            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{st.label}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0 ml-2">
+                        <p className="font-bold text-sm" style={{ color: "var(--foreground)" }}>฿{fmt(r.totalAmount)}</p>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+
           </div>
         </div>
 
