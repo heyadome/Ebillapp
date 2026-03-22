@@ -1,19 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #f9fafb;
-  --foreground: #0f172a;
+  --background: #f5f7f9;
+  --foreground: #2c2f31;
   --card: #ffffff;
   --card-border: #e2e8f0;
-  --accent: #0052FF;
-  --accent-hover: #0043D2;
+  --accent: #2563EB;
+  --accent-hover: #1d4ed8;
   --accent-secondary: #8b5cf6;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted: #eef1f3;
+  --muted-foreground: #595c5e;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --sidebar-width: 260px;
+  --sidebar-width: 256px;
+  --sidebar-collapsed-width: 72px;
 }
 
 @theme inline {
@@ -21,14 +23,17 @@
   --color-foreground: var(--foreground);
 }
 
-
 html { height: 100%; background: var(--background); }
 
 body {
   height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', 'Inter', sans-serif;
 }
 
 /* ── Scrollbar ── */
@@ -36,6 +41,8 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ── Animations ── */
 @keyframes fadeIn {
@@ -50,11 +57,25 @@ body {
 .animate-fade-in  { animation: fadeIn  0.3s ease forwards; }
 .animate-slide-in { animation: slideIn 0.3s ease forwards; }
 
+/* ── Glass effect ── */
+.glass-effect {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Editorial shadow ── */
+.editorial-shadow {
+  box-shadow: 0 8px 32px -12px rgba(44, 47, 49, 0.08);
+}
+
 /* ── Card ── */
 .card {
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: 16px;
+}
+@media (min-width: 768px) {
+  .card { border-radius: 24px; }
 }
 .card-hover {
   transition: all 0.2s ease;
@@ -90,18 +111,26 @@ body {
 /* ── Content frame ── */
 .content-frame {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px 16px;
+}
+@media (min-width: 768px) {
+  .content-frame { padding: 24px 24px; }
 }
 @media (min-width: 1024px) {
   .content-frame { padding: 28px 32px; }
 }
 
-/* ── Sidebar layout ── */
+/* ── Sidebar layout (desktop only) ── */
 @media (min-width: 1024px) {
-  main[data-sidebar-collapsed="false"] { margin-left: 260px; }
+  main[data-sidebar-collapsed="false"] { margin-left: 256px; }
   main[data-sidebar-collapsed="true"]  { margin-left: 72px; }
+}
+
+/* ── Mobile bottom nav safe area ── */
+@media (max-width: 1023px) {
+  .content-frame { padding-bottom: 100px; }
 }
 
 /* ── Button styles ── */
@@ -110,24 +139,25 @@ body {
   color: white;
   font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 10px 20px;
   font-size: 14px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.25);
   cursor: pointer;
 }
 .btn-primary:hover {
   background: var(--accent-hover);
-  box-shadow: 0 4px 12px rgba(59,130,246,0.35);
+  box-shadow: 0 6px 16px rgba(37,99,235,0.35);
 }
+.btn-primary:active { transform: scale(0.97); }
 
 .btn-secondary {
   background: var(--card);
   color: var(--foreground);
   font-weight: 500;
   border: 1px solid var(--card-border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 10px 20px;
   font-size: 14px;
   transition: all 0.2s ease;
@@ -137,22 +167,23 @@ body {
   background: var(--muted);
   border-color: #d1d5db;
 }
+.btn-secondary:active { transform: scale(0.97); }
 
 /* ── Input fields ── */
 .input-field {
   width: 100%;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--card-border);
   background: var(--card);
   color: var(--foreground);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .input-field:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
 }
 .input-field::placeholder {
   color: var(--muted-foreground);

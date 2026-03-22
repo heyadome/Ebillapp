@@ -101,13 +101,13 @@ export default function UploadPage() {
 
   return (
     <AppLayout>
-      <div className="h-[calc(100vh-100px)] min-h-[600px] animate-fade-in flex flex-col pt-2 pb-6 px-1 lg:px-4">
+      <div className="min-h-[600px] animate-fade-in flex flex-col pt-2 pb-6 px-1 lg:px-4">
         
         <div className="mb-4">
-          <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>สแกนบิล</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)", fontFamily: "'Manrope', sans-serif" }}>สแกนบิล</h1>
         </div>
 
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Main Upload Zone (Left side taking up more space) */}
           <div className="lg:col-span-8 flex flex-col gap-4 h-full">

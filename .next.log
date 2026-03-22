@@ -142,3 +142,2328 @@
 ✓ Compiled in 66ms
  GET /dashboard 200 in 47ms (next.js: 24ms, application-code: 23ms)
  GET /dashboard 200 in 12ms (next.js: 768µs, application-code: 11ms)
+ GET /dashboard 200 in 67ms (next.js: 3ms, application-code: 64ms)
+ GET /api/dashboard 200 in 25ms (next.js: 21ms, application-code: 4ms)
+ GET /receipts 200 in 45ms (next.js: 7ms, application-code: 39ms)
+ GET /api/receipts?search=&status=all&sortBy=createdAt&page=1 200 in 17ms (next.js: 14ms, application-code: 3ms)
+ GET /upload 200 in 53ms (next.js: 10ms, application-code: 43ms)
+ GET /settings 200 in 69ms (next.js: 21ms, application-code: 48ms)
+ GET /settings 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /upload 200 in 29ms (next.js: 2ms, application-code: 27ms)
+ GET /reports 200 in 62ms (next.js: 10ms, application-code: 52ms)
+ GET /api/reports?year=2026 200 in 21ms (next.js: 17ms, application-code: 4ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <InnerLayoutRouter url="/reports" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+      <SegmentViewNode type="page" pagePath="reports/pa...">
+        <SegmentTrieNode>
+        <ClientPageRoot Component={function ReportsPage} serverProvidedParams={{...}}>
+          <ReportsPage params={Promise} searchParams={Promise}>
+            <AppLayout>
+              <div className="h-full">
+                <div className="flex h-full" style={{...}}>
+                  <Sidebar>
+                  <main className="flex-1 fle..." style={{...}} data-sidebar-collapsed="false">
+                    <header>
+                    <div>
+                    <div className="flex-1 ove...">
+                      <div className="content-frame">
+                        <div className="space-y-6 ...">
+                          <div>
+                          <div>
+                          <div className="card p-6 l...">
+                            <div>
+                            <div className="flex items...">
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "71.49041969814142%"
+-                                 height: "58.478%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "63.16859214359931%"
+-                                 height: "22.3511%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "27.187192202409793%"
+-                                 height: "57.8398%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "94.29918650917668%"
+-                                 height: "69.4513%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "73.93056205275148%"
+-                                 height: "69.8426%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "67.76954523479252%"
+-                                 height: "29.4327%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "54.59200379627303%"
+-                                 height: "54.094%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "69.71972205712694%"
+-                                 height: "84.5555%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "61.95008910775336%"
+-                                 height: "91.6539%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "88.60643433753195%"
+-                                 height: "85.5906%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "78.63696249526362%"
+-                                 height: "20.5971%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                              <div
+                                className="w-full max-w-16 rounded-t-xl animate-pulse"
+                                style={{
++                                 background: "var(--muted)"
++                                 height: "41.56939904383009%"
+-                                 height: "65.156%"
+-                                 background-image: ""
+-                                 background-position-x: ""
+-                                 background-position-y: ""
+-                                 background-size: ""
+-                                 background-repeat: ""
+-                                 background-attachment: ""
+-                                 background-origin: ""
+-                                 background-clip: ""
+-                                 background-color: ""
+                                }}
+                              >
+                            ...
+                          ...
+      ...
+ 
+ GET /settings 200 in 46ms (next.js: 7ms, application-code: 39ms)
+ GET /settings 200 in 28ms (next.js: 1523µs, application-code: 27ms)
+ GET /dashboard 200 in 10ms (next.js: 1930µs, application-code: 8ms)
+ GET /api/dashboard 200 in 5ms (next.js: 1175µs, application-code: 3ms)
+ GET /api/dashboard 200 in 4ms (next.js: 1463µs, application-code: 2ms)
+ GET /upload 200 in 21ms (next.js: 7ms, application-code: 14ms)
+✓ Compiled in 126ms
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+ GET /api/dashboard 500 in 422ms (next.js: 372ms, application-code: 50ms)
+ GET /api/dashboard 500 in 5ms (next.js: 1446µs, application-code: 3ms)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+⨯ ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+ GET /dashboard 500 in 22ms (next.js: 14ms, application-code: 8ms)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] Uncaught Error: ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+    at <unknown> (Error: (./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+⨯ ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+ GET /dashboard 500 in 9ms (next.js: 4ms, application-code: 5ms)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] Uncaught Error: ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+    at <unknown> (Error: (./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+⨯ ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+ GET /dashboard 500 in 17ms (next.js: 9ms, application-code: 8ms)
+[browser] Uncaught Error: ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+    at <unknown> (Error: (./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+⨯ ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  [90m1619 |[0m   }
+  [90m1620 |[0m }
+[31m[1m>[0m [90m1621 |[0m @[36mimport[0m url([32m'https:...[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1622 |[0m :root {
+  [90m1623 |[0m   --background: #f5...
+  [90m1624 |[0m   --foreground: #[35m2[0mc...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+ GET / 500 in 19ms (next.js: 11ms, application-code: 8ms)
+[browser] Uncaught Error: ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+    at <unknown> (Error: (./src/app/globals.css:1621:8)
+    at <unknown> (./src/app/globals.css:1621:8)
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[browser] ./src/app/globals.css:1621:8
+Parsing CSS source code failed
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of src/app/globals.css:
+./src/app/globals.css:1621:8
+  1619 |   }
+  1620 | }
+> 1621 | @import url('https:...
+       |        ^
+  1622 | :root {
+  1623 |   --background: #f5...
+  1624 |   --foreground: #2c...
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] 
+[?25h

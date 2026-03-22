@@ -171,9 +171,39 @@ export default function ReceiptsPage() {
             </table>
           </div>
 
-          {/* Mobile view omitted for brevity, focusing on Desktop as per design */}
-          <div className="md:hidden p-6 text-center text-sm text-slate-500">
-             โปรดดูตารางบนเดสก์ท็อปเพื่อการแสดงผลที่สมบูรณ์
+          {/* Mobile card view */}
+          <div className="md:hidden divide-y" style={{ borderColor: "var(--card-border)" }}>
+            {loading ? (
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="p-4"><div className="h-16 rounded-xl animate-pulse" style={{ background: "var(--muted)" }} /></div>
+              ))
+            ) : receipts.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-sm">ไม่พบรายการ</div>
+            ) : receipts.map((r) => {
+              const s = STATUS_MAP[r.status] || STATUS_MAP.pending;
+              return (
+                <div key={r.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 active:scale-[0.99] transition-all cursor-pointer"
+                  onClick={() => window.location.href = `/receipts/${r.id}`}>
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "var(--muted)" }}>
+                    <Receipt size={18} className="text-slate-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm truncate" style={{ color: "var(--foreground)" }}>{r.vendorName || "ไม่ระบุ"}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                      {r.issueDate ? new Date(r.issueDate).toLocaleDateString("th-TH", { day: '2-digit', month: 'short' }) : "—"}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="font-bold text-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>{fmt(r.totalAmount, r.currency)}</p>
+                    <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-bold uppercase tracking-wide" style={{ color: s.color }}>
+                      {r.status === 'approved' && <CheckCircle2 size={10} />}
+                      {r.status === 'pending' && <Clock size={10} />}
+                      {s.label}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="flex items-center justify-between px-6 py-4 border-t bg-slate-50" style={{ borderColor: "var(--card-border)" }}>
@@ -186,8 +216,8 @@ export default function ReceiptsPage() {
         </div>
       </div>
 
-      {/* Floating Summary Dock (moved outside of animate-fade-in to avoid transform stacking context) */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100] flex items-center gap-4 bg-white p-3 rounded-2xl shadow-2xl border border-slate-100" style={{ maxWidth: "calc(100% - 32px)" }}>
+      {/* Floating Summary Dock */}
+      <div className="fixed bottom-24 lg:bottom-6 left-1/2 transform -translate-x-1/2 z-[100] flex items-center gap-4 bg-white p-3 rounded-2xl shadow-2xl border border-slate-100" style={{ maxWidth: "calc(100% - 32px)" }}>
          <div className="flex-1 flex items-center justify-between pl-4 pr-6 min-w-[150px]">
            <span className="text-sm font-bold text-slate-400">ยอดรวม</span>
            <span className="text-2xl font-bold tracking-tight text-slate-800">฿68,450</span>
