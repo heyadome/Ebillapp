@@ -1,12 +1,13 @@
 "use client";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Bell, Menu, Search, LayoutDashboard, Receipt, Upload,
-  Mail, TrendingUp, User, ScanLine
+  Mail, TrendingUp, User, ScanLine, LogOut
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ── Mobile Bottom Nav Items ── */
 const bottomNavItems = [
@@ -20,6 +21,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading, logout } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [loading, user, router]);
+
+  // Show nothing while loading or redirecting
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--background)" }}>
+        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full">
@@ -88,17 +107,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   style={{ background: "var(--accent)" }} />
               </button>
               <div className="flex items-center gap-3 pl-3 lg:pl-4 lg:border-l" style={{ borderColor: 'var(--card-border)' }}>
-                <div className="hidden lg:block text-right cursor-pointer">
-                  <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>ณราธร รัตนพงษ์</div>
-                  <div className="text-[10px] uppercase tracking-widest font-medium" style={{ color: "var(--muted-foreground)" }}>แอดมิน</div>
-                </div>
-                <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-blue-100">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {user && (
+                  <>
+                    <div className="hidden lg:block text-right cursor-pointer">
+                      <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{user.name || user.username}</div>
+                      <div className="text-[10px] uppercase tracking-widest font-medium" style={{ color: "var(--muted-foreground)" }}>
+                        {user.role === "admin" ? "แอดมิน" : "ผู้ใช้"}
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-blue-100 text-sm font-bold"
+                      style={{ background: "rgba(37,99,235,0.1)", color: "var(--accent)" }}>
+                      {(user.name || user.username)[0].toUpperCase()}
+                    </div>
+                    <button
+                      onClick={async () => { await logout(); router.push("/login"); }}
+                      className="hidden lg:flex p-2 rounded-xl transition-colors hover:bg-red-50"
+                      style={{ color: "#ef4444" }}
+                      title="ออกจากระบบ"
+                    >
+                      <LogOut size={18} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </header>

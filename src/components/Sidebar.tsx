@@ -1,26 +1,29 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Receipt, Mail, Upload, Settings,
   Building2, Users, FileText, TrendingUp,
   ChevronLeft, ChevronRight, X, Camera, HelpCircle, LogOut
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
+// Nav items with optional adminOnly flag
 const navItems = [
   { href: "/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
   { href: "/upload",    label: "สแกนบิล",  icon: Camera },
   { href: "/receipts",  label: "รายการใช้จ่าย", icon: Receipt },
-  { href: "/email",     label: "สแกนอีเมล",  icon: Mail },
+  { href: "/email",     label: "สแกนอีเมล",  icon: Mail, adminOnly: true },
   { href: "/reports",   label: "รายงาน",     icon: TrendingUp },
-  { href: "/vouchers",  label: "ใบรับรองแทน", icon: FileText },
+  { href: "/vouchers",  label: "ใบรับรองแทน", icon: FileText, adminOnly: true },
 ];
 
 const bottomItems = [
-  { href: "/business",   label: "ข้อมูลธุรกิจ", icon: Building2 },
-  { href: "/requesters", label: "ผู้เบิก",     icon: Users },
-  { href: "/settings",   label: "ตั้งค่า",     icon: Settings },
+  { href: "/business",    label: "ข้อมูลธุรกิจ", icon: Building2, adminOnly: true },
+  { href: "/admin/users", label: "จัดการผู้ใช้",  icon: Users, adminOnly: true },
+  { href: "/requesters",  label: "ผู้เบิก",     icon: Users, adminOnly: true },
+  { href: "/settings",    label: "ตั้งค่า",     icon: Settings },
 ];
 
 interface SidebarProps {
@@ -31,6 +34,8 @@ interface SidebarProps {
 
 export default function Sidebar({ mobileOpen, onMobileClose, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const mounted = useRef(false);
 
@@ -106,9 +111,11 @@ export default function Sidebar({ mobileOpen, onMobileClose, onCollapsedChange }
 
         {/* Main nav */}
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink key={item.href} {...item} showLabel={showLabel} />
-          ))}
+          {navItems
+            .filter((item) => !("adminOnly" in item && item.adminOnly) || user?.role === "admin")
+            .map((item) => (
+              <NavLink key={item.href} {...item} showLabel={showLabel} />
+            ))}
         </nav>
 
         {/* Scan CTA Button */}
@@ -128,28 +135,36 @@ export default function Sidebar({ mobileOpen, onMobileClose, onCollapsedChange }
 
         {/* Bottom nav */}
         <div className="px-3 py-2 space-y-1 border-t flex-shrink-0" style={{ borderColor: "var(--card-border)" }}>
-          {bottomItems.map((item) => (
-            <NavLink key={item.href} {...item} showLabel={showLabel} />
-          ))}
+          {bottomItems
+            .filter((item) => !("adminOnly" in item && item.adminOnly) || user?.role === "admin")
+            .map((item) => (
+              <NavLink key={item.href} {...item} showLabel={showLabel} />
+            ))}
 
           {/* User */}
-          {showLabel && (
+          {showLabel && user && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl mt-2"
               style={{ background: "var(--card)" }}>
-              <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-blue-100">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=80"
-                  alt="Avatar" className="w-full h-full object-cover"
-                />
+              <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-blue-100 text-sm font-bold"
+                style={{ background: "rgba(37,99,235,0.1)", color: "var(--accent)" }}>
+                {(user.name || user.username || "U")[0].toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>
-                  ผู้ดูแลระบบ
+                  {user.name || user.username}
                 </div>
                 <div className="text-xs truncate" style={{ color: "var(--muted-foreground)" }}>
-                  admin@company.com
+                  {user.role === "admin" ? "แอดมิน" : "ผู้ใช้"}
                 </div>
               </div>
+              <button
+                onClick={async () => { await logout(); router.push("/login"); }}
+                className="p-1.5 rounded-lg hover:bg-red-50 transition-colors flex-shrink-0"
+                style={{ color: "#ef4444" }}
+                title="ออกจากระบบ"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           )}
         </div>

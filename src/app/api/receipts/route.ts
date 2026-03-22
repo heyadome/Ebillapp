@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { uploadToGoogleDrive, isGoogleDriveConfigured } from "@/lib/google-drive";
 
 export async function GET(req: NextRequest) {
   try {
@@ -97,6 +98,30 @@ export async function POST(req: NextRequest) {
           : undefined,
       },
     });
+
+    // Auto-backup to Google Drive if configured and image exists
+    if (isGoogleDriveConfigured() && imageUrl) {
+      try {
+        // imageUrl is base64 data URL
+        const base64Match = imageUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (base64Match) {
+          const mimeType = base64Match[1];
+          const buffer = Buffer.from(base64Match[2], "base64");
+          const ext = mimeType.includes("png") ? "png" : "jpg";
+          const fileName = `${receipt.vendorName || "receipt"}_${receipt.id}.${ext}`;
+
+          const driveResult = await uploadToGoogleDrive({ fileName, mimeType, fileBuffer: buffer });
+          if (driveResult) {
+            await prisma.receipt.update({
+              where: { id: receipt.id },
+              data: { driveFileId: driveResult.fileId },
+            });
+          }
+        }
+      } catch (driveError) {
+        console.error("Google Drive backup failed (non-blocking):", driveError);
+      }
+    }
 
     return NextResponse.json(receipt);
   } catch (error) {

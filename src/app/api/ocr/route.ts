@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { performOCR } from "@/lib/ai-ocr";
 
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({
-        error: "ANTHROPIC_API_KEY not configured",
-        result: null,
-      }, { status: 400 });
-    }
-
     const formData = await req.formData();
     const file = formData.get("image") as File;
     if (!file) {
@@ -20,68 +11,18 @@ export async function POST(req: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
-    const mediaType = file.type as "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+    const mediaType = file.type || "image/jpeg";
 
-    const response = await anthropic.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "image",
-              source: { type: "base64", media_type: mediaType, data: base64 },
-            },
-            {
-              type: "text",
-              text: `คุณเป็นผู้เชี่ยวชาญด้านการอ่านใบเสร็จและใบกำกับภาษีไทย
+    const { result, provider, error } = await performOCR(base64, mediaType);
 
-กรุณาดึงข้อมูลจากเอกสารนี้และส่งกลับเป็น JSON ดังนี้:
-{
-  "type": "receipt" หรือ "invoice",
-  "receiptNumber": "เลขที่ใบเสร็จ/ใบกำกับภาษี",
-  "issueDate": "YYYY-MM-DD",
-  "vendorName": "ชื่อร้านค้า/บริษัท",
-  "vendorTaxId": "เลขประจำตัวผู้เสียภาษี",
-  "vendorAddress": "ที่อยู่ผู้ขาย",
-  "totalAmount": ยอดรวม (ตัวเลข),
-  "subtotal": ยอดก่อนภาษี (ตัวเลข),
-  "vat": VAT (ตัวเลข),
-  "wht": ภาษีหัก ณ ที่จ่าย (ตัวเลข),
-  "items": [
-    {
-      "description": "รายละเอียดสินค้า/บริการ",
-      "type": "product" หรือ "service",
-      "quantity": จำนวน,
-      "unitPrice": ราคาต่อหน่วย,
-      "amount": ยอดรวม
-    }
-  ]
-}
-
-ส่งกลับเฉพาะ JSON เท่านั้น ไม่ต้องมีข้อความอื่น หากไม่มีข้อมูลให้ใส่ null`,
-            },
-          ],
-        },
-      ],
-    });
-
-    const text = response.content[0].type === "text" ? response.content[0].text : "";
-
-    let result = null;
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      }
-    } catch {
-      console.error("Failed to parse OCR response");
+    if (error) {
+      return NextResponse.json({ error, result: null, provider }, { status: 500 });
     }
 
-    return NextResponse.json({ result });
-  } catch (error: any) {
+    return NextResponse.json({ result, provider });
+  } catch (error: unknown) {
     console.error("OCR error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

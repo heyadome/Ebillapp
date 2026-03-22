@@ -8,11 +8,14 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
+  username      String    @unique
   name          String?
-  email         String    @unique
+  email         String?
+  password      String    @default("1234")
   emailVerified DateTime?
   image         String?
-  role          String    @default("admin")
+  role          String    @default("user")
+  active        Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
@@ -48,19 +51,23 @@ model Session {
 }
 
 model Business {
-  id          String   @id @default(cuid())
-  name        String
-  taxId       String?
-  address     String?
-  phone       String?
-  email       String?
-  logo        String?
-  signature   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       BusinessUser[]
-  receipts    Receipt[]
-  requesters  Requester[]
+  id              String   @id @default(cuid())
+  name            String
+  taxId           String?
+  address         String?
+  phone           String?
+  email           String?
+  logo            String?
+  signature       String?
+  aiProvider      String   @default("claude")
+  aiAutoSwitch    Boolean  @default(true)
+  claudeApiKey    String?
+  geminiApiKey    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  users           BusinessUser[]
+  receipts        Receipt[]
+  requesters      Requester[]
 }
 
 model BusinessUser {

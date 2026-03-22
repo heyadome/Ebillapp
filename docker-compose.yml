@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: ebillapp
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./prisma/dev.db:/app/prisma/dev.db
+      - ./data:/app/data
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
