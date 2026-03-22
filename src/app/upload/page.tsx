@@ -17,8 +17,9 @@ interface LineItem {
 interface FormData {
   type: string; receiptNumber: string; issueDate: string;
   vendorName: string; vendorTaxId: string; vendorAddress: string;
+  customerName: string; customerTaxId: string; customerAddress: string;
   currency: string; totalAmount: number; subtotal: number;
-  vat: number; wht: number; note: string;
+  discount: number; vat: number; wht: number; note: string;
 }
 
 const CATEGORIES = [
@@ -38,17 +39,23 @@ export default function UploadPage() {
   const [items, setItems] = useState<LineItem[]>([]);
   const [form, setForm] = useState<FormData>({
     type: "receipt", receiptNumber: "", issueDate: "", vendorName: "",
-    vendorTaxId: "", vendorAddress: "", currency: "THB",
-    totalAmount: 0, subtotal: 0, vat: 0, wht: 0, note: "",
+    vendorTaxId: "", vendorAddress: "", customerName: "", customerTaxId: "",
+    customerAddress: "", currency: "THB",
+    totalAmount: 0, subtotal: 0, discount: 0, vat: 0, wht: 0, note: "",
   });
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.match(/image\/*|application\/pdf/)) return;
     setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setImagePreview(e.target?.result as string);
-    reader.readAsDataURL(file);
+    if (file.type === "application/pdf") {
+      // Show PDF icon placeholder (can't render PDF as img directly)
+      setImagePreview("__pdf__");
+    } else {
+      const reader = new FileReader();
+      reader.onload = (e) => setImagePreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -66,7 +73,24 @@ export default function UploadPage() {
       const data = await res.json();
       if (data.result) {
         const r = data.result;
-        setForm(prev => ({ ...prev, type: r.type || prev.type, receiptNumber: r.receiptNumber || prev.receiptNumber, issueDate: r.issueDate || prev.issueDate, vendorName: r.vendorName || prev.vendorName, vendorTaxId: r.vendorTaxId || prev.vendorTaxId, vendorAddress: r.vendorAddress || prev.vendorAddress, totalAmount: r.totalAmount || prev.totalAmount, subtotal: r.subtotal || prev.subtotal, vat: r.vat || prev.vat, wht: r.wht || prev.wht }));
+        setForm(prev => ({
+          ...prev,
+          type: r.type || prev.type,
+          receiptNumber: r.receiptNumber || prev.receiptNumber,
+          issueDate: r.issueDate || prev.issueDate,
+          vendorName: r.vendorName || prev.vendorName,
+          vendorTaxId: r.vendorTaxId || prev.vendorTaxId,
+          vendorAddress: r.vendorAddress || prev.vendorAddress,
+          customerName: r.customerName || prev.customerName,
+          customerTaxId: r.customerTaxId || prev.customerTaxId,
+          customerAddress: r.customerAddress || prev.customerAddress,
+          totalAmount: r.totalAmount || prev.totalAmount,
+          subtotal: r.subtotal || prev.subtotal,
+          discount: r.discount || prev.discount,
+          vat: r.vat || prev.vat,
+          wht: r.wht || prev.wht,
+          note: r.note || prev.note,
+        }));
         if (r.items?.length > 0) {
           setItems(r.items.map((item: any, i: number) => ({ id: String(i), description: item.description || "", type: item.type || "service", quantity: item.quantity || 1, unitPrice: item.unitPrice || 0, amount: item.amount || 0, category: item.category || "" })));
         }
@@ -120,7 +144,19 @@ export default function UploadPage() {
                      
                      {imagePreview ? (
                        <div className="w-full h-full p-4 relative flex items-center justify-center">
-                         <img src={imagePreview} alt="preview" className="max-w-full max-h-full object-contain rounded-xl shadow-sm" />
+                         {imagePreview === "__pdf__" ? (
+                           <div className="flex flex-col items-center justify-center gap-4 text-slate-500">
+                             <div className="w-24 h-24 bg-red-50 rounded-2xl flex items-center justify-center">
+                               <FileText size={48} className="text-red-500" />
+                             </div>
+                             <div className="text-center">
+                               <p className="font-bold text-slate-700">{imageFile?.name}</p>
+                               <p className="text-sm text-slate-400 mt-1">ไฟล์ PDF พร้อมสแกน</p>
+                             </div>
+                           </div>
+                         ) : (
+                           <img src={imagePreview} alt="preview" className="max-w-full max-h-full object-contain rounded-xl shadow-sm" />
+                         )}
                          <div className="absolute top-6 right-6 flex gap-2">
                             <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md text-slate-700 hover:text-blue-600 transition-colors"
                               onClick={handleScan} disabled={scanning}>
@@ -196,32 +232,78 @@ export default function UploadPage() {
 
                {tab === "header" && (
                  <div className="space-y-5 animate-fade-in">
+                    {/* Vendor */}
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">ชื่อผู้ขาย / ร้านค้า</label>
-                      <input value={form.vendorName} onChange={(e) => setForm({ ...form, vendorName: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white" placeholder="—" />
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">ผู้ขาย / ร้านค้า</label>
+                      <input value={form.vendorName} onChange={(e) => setForm({ ...form, vendorName: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="ชื่อร้านค้า/บริษัท" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">วันที่</label>
-                        <input type="date" value={form.issueDate} onChange={(e) => setForm({ ...form, issueDate: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" />
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">เลขผู้เสียภาษีผู้ขาย</label>
+                        <input value={form.vendorTaxId} onChange={(e) => setForm({ ...form, vendorTaxId: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0000000000000" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">เลขที่บิล</label>
-                        <input value={form.receiptNumber} onChange={(e) => setForm({ ...form, receiptNumber: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="—" />
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">เลขที่บิล</label>
+                        <input value={form.receiptNumber} onChange={(e) => setForm({ ...form, receiptNumber: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="—" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+
+                    {/* Customer */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">ลูกค้า / ผู้ซื้อ</label>
+                      <input value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="ชื่อลูกค้า (ถ้ามี)" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">เลขผู้เสียภาษีลูกค้า</label>
+                      <input value={form.customerTaxId} onChange={(e) => setForm({ ...form, customerTaxId: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0000000000000" />
+                    </div>
+
+                    {/* Date + Type */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">ยอดรวม (฿)</label>
-                        <input type="number" value={form.totalAmount || ""} onChange={(e) => setForm({ ...form, totalAmount: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm" placeholder="0.00" />
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">วันที่ออกเอกสาร</label>
+                        <input type="date" value={form.issueDate} onChange={(e) => setForm({ ...form, issueDate: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">ประเภท</label>
-                        <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-sm">
-                          <option value="receipt">ใบเสร็จ</option>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">ประเภท</label>
+                        <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs">
+                          <option value="receipt">ใบเสร็จรับเงิน</option>
                           <option value="invoice">ใบกำกับภาษี</option>
                         </select>
                       </div>
+                    </div>
+
+                    {/* Amounts */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">ยอดเงิน</label>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">ยอดก่อน VAT (฿)</label>
+                        <input type="number" value={form.subtotal || ""} onChange={(e) => setForm({ ...form, subtotal: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0.00" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">ส่วนลด (฿)</label>
+                        <input type="number" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0.00" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">VAT (฿)</label>
+                        <input type="number" value={form.vat || ""} onChange={(e) => setForm({ ...form, vat: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0.00" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">WHT (฿)</label>
+                        <input type="number" value={form.wht || ""} onChange={(e) => setForm({ ...form, wht: parseFloat(e.target.value) || 0 })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="0.00" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">ยอดรวมสุทธิ (฿)</label>
+                      <input type="number" value={form.totalAmount || ""} onChange={(e) => setForm({ ...form, totalAmount: parseFloat(e.target.value) || 0 })} className="input-field bg-white border-blue-200 focus:bg-white text-sm font-bold" placeholder="0.00" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">หมายเหตุ / เลขอ้างอิง</label>
+                      <input value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} className="input-field bg-slate-50 border-transparent focus:bg-white text-xs" placeholder="—" />
                     </div>
                  </div>
                )}

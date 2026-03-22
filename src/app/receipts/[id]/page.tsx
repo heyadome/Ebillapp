@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Receipt, Calendar, Building2, Hash, FileText,
-  CheckCircle2, AlertCircle, Edit2, Trash2, Download, ExternalLink
+  CheckCircle2, AlertCircle, Edit2, Trash2, Download, ExternalLink, User
 } from "lucide-react";
 import Link from "next/link";
 
@@ -16,9 +16,13 @@ interface ReceiptDetail {
   vendorName: string | null;
   vendorTaxId: string | null;
   vendorAddress: string | null;
+  customerName: string | null;
+  customerTaxId: string | null;
+  customerAddress: string | null;
   currency: string;
   totalAmount: number;
   subtotal: number;
+  discount: number;
   vat: number;
   wht: number;
   status: string;
@@ -152,6 +156,25 @@ export default function ReceiptDetailPage() {
                   <p className="text-sm" style={{ color: "var(--foreground)" }}>{receipt.vendorAddress}</p>
                 </div>
               )}
+
+              {/* Customer Info */}
+              {(receipt.customerName || receipt.customerTaxId) && (
+                <div className="mt-4 p-4 rounded-xl" style={{ background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.12)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <User size={14} style={{ color: "var(--accent)" }} />
+                    <p className="text-xs font-semibold" style={{ color: "var(--accent)" }}>ข้อมูลลูกค้า</p>
+                  </div>
+                  {receipt.customerName && (
+                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{receipt.customerName}</p>
+                  )}
+                  {receipt.customerTaxId && (
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>เลขผู้เสียภาษี: {receipt.customerTaxId}</p>
+                  )}
+                  {receipt.customerAddress && (
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{receipt.customerAddress}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Line Items */}
@@ -196,9 +219,11 @@ export default function ReceiptDetailPage() {
               <h2 className="font-medium mb-4" style={{ color: "var(--foreground)" }}>สรุปยอด</h2>
               <div className="space-y-2">
                 {[
-                  { label: "ยอดก่อนภาษี", value: receipt.subtotal },
+                  { label: "ยอดก่อนหักส่วนลด", value: receipt.subtotal + receipt.discount },
+                  ...(receipt.discount > 0 ? [{ label: "ส่วนลด", value: -receipt.discount }] : []),
+                  { label: "ยอดก่อน VAT", value: receipt.subtotal },
                   { label: "VAT 7%", value: receipt.vat },
-                  { label: "หัก ณ ที่จ่าย (WHT)", value: -receipt.wht },
+                  ...(receipt.wht > 0 ? [{ label: "หัก ณ ที่จ่าย (WHT)", value: -receipt.wht }] : []),
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between text-sm">
                     <span style={{ color: "var(--muted-foreground)" }}>{label}</span>

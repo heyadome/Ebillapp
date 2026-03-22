@@ -1,37 +1,55 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
+import { execFile } from "child_process";
+import { promisify } from "util";
+import { writeFile, readFile, unlink } from "fs/promises";
+import { tmpdir } from "os";
+import { join } from "path";
 import { prisma } from "@/lib/prisma";
+
+const execFileAsync = promisify(execFile);
 
 const OCR_PROMPT = `คุณเป็นผู้เชี่ยวชาญด้านการอ่านใบเสร็จและใบกำกับภาษีไทย
 
 กรุณาดึงข้อมูลจากเอกสารนี้และส่งกลับเป็น JSON ดังนี้:
 {
-  "type": "receipt" หรือ "invoice",
+  "type": "receipt" หรือ "invoice" (ถ้าเป็นทั้งสองอย่างให้ใช้ "receipt"),
   "receiptNumber": "เลขที่ใบเสร็จ/ใบกำกับภาษี",
   "issueDate": "YYYY-MM-DD",
-  "vendorName": "ชื่อร้านค้า/บริษัท",
-  "vendorTaxId": "เลขประจำตัวผู้เสียภาษี",
+  "vendorName": "ชื่อร้านค้า/บริษัทผู้ขาย",
+  "vendorTaxId": "เลขประจำตัวผู้เสียภาษีผู้ขาย",
   "vendorAddress": "ที่อยู่ผู้ขาย",
-  "totalAmount": ยอดรวม (ตัวเลข),
-  "subtotal": ยอดก่อนภาษี (ตัวเลข),
-  "vat": VAT (ตัวเลข),
-  "wht": ภาษีหัก ณ ที่จ่าย (ตัวเลข),
+  "customerName": "ชื่อลูกค้า/ผู้ซื้อ (ดูจากช่อง ลูกค้า หรือ ผู้ซื้อ)",
+  "customerTaxId": "เลขประจำตัวผู้เสียภาษีลูกค้า",
+  "customerAddress": "ที่อยู่ลูกค้า",
+  "totalAmount": ยอดรวมสุทธิที่ต้องชำระ (ตัวเลข),
+  "subtotal": ยอดก่อนภาษี/ราคาสินค้าก่อน VAT (ตัวเลข),
+  "discount": ส่วนลดรวม (ตัวเลข ถ้าไม่มีใส่ 0),
+  "vat": ภาษีมูลค่าเพิ่ม VAT (ตัวเลข),
+  "wht": ภาษีหัก ณ ที่จ่าย WHT (ตัวเลข),
+  "note": "หมายเหตุ/เลขอ้างอิงการชำระเงิน (ถ้ามี)",
   "items": [
     {
-      "description": "รายละเอียดสินค้า/บริการ",
+      "description": "รายละเอียดสินค้า/บริการ พร้อมรหัสสินค้าถ้ามี",
       "type": "product" หรือ "service",
       "quantity": จำนวน,
-      "unitPrice": ราคาต่อหน่วย,
-      "amount": ยอดรวม
+      "unitPrice": ราคาต่อหน่วย (รวม VAT ถ้าแสดงอยู่),
+      "amount": ยอดรวมก่อนหักส่วนลด (ตัวเลข),
+      "discount": ส่วนลดของรายการนี้ (ตัวเลข ถ้าไม่มีใส่ 0)
     }
   ]
 }
 
-ส่งกลับเฉพาะ JSON เท่านั้น ไม่ต้องมีข้อความอื่น หากไม่มีข้อมูลให้ใส่ null`;
+กฎสำคัญ:
+- ส่งกลับเฉพาะ JSON เท่านั้น ไม่ต้องมีข้อความอื่น
+- ถ้าไม่มีข้อมูลให้ใส่ null สำหรับ string หรือ 0 สำหรับตัวเลข
+- issueDate ต้องเป็นรูปแบบ YYYY-MM-DD เสมอ
+- totalAmount คือยอดที่ลูกค้าต้องชำระจริง (หลังหักส่วนลดและรวม VAT แล้ว)
+- subtotal คือยอดสินค้าก่อน VAT (หลังหักส่วนลดแล้ว)`;
 
 /** Timeout per provider in milliseconds */
-const PROVIDER_TIMEOUT_MS = 30_000;
+const PROVIDER_TIMEOUT_MS = 45_000;
 
 type Provider = "claude" | "gemini" | "chatgpt";
 
@@ -72,8 +90,66 @@ function withTimeout<T>(promise: Promise<T>, ms: number, provider: Provider): Pr
   ]);
 }
 
+/**
+ * Convert a PDF (base64) to a JPEG image (base64) using pdftoppm (poppler).
+ * Returns null if conversion fails.
+ */
+async function pdfToImageBase64(pdfBase64: string): Promise<{ base64: string; mediaType: string } | null> {
+  const tmpIn = join(tmpdir(), `ocr_${Date.now()}.pdf`);
+  const tmpOutPrefix = join(tmpdir(), `ocr_${Date.now()}`);
+  try {
+    await writeFile(tmpIn, Buffer.from(pdfBase64, "base64"));
+    // pdftoppm converts PDF page 1 to PPM image → we use -jpeg flag
+    await execFileAsync("pdftoppm", ["-jpeg", "-r", "200", "-f", "1", "-l", "1", tmpIn, tmpOutPrefix]);
+    // Output file will be tmpOutPrefix-1.jpg or tmpOutPrefix-01.jpg
+    let imgPath = `${tmpOutPrefix}-1.jpg`;
+    try {
+      await readFile(imgPath);
+    } catch {
+      imgPath = `${tmpOutPrefix}-01.jpg`;
+    }
+    const imgBuffer = await readFile(imgPath);
+    await unlink(tmpIn).catch(() => {});
+    await unlink(imgPath).catch(() => {});
+    return { base64: imgBuffer.toString("base64"), mediaType: "image/jpeg" };
+  } catch {
+    await unlink(tmpIn).catch(() => {});
+    return null;
+  }
+}
+
+function parseOCRText(text: string): Record<string, unknown> | null {
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch {
+    return null;
+  }
+}
+
 async function ocrWithClaude(base64: string, mediaType: string, apiKey: string): Promise<OCRResult> {
   const anthropic = new Anthropic({ apiKey });
+  const isPdf = mediaType === "application/pdf";
+
+  // Claude supports PDF natively via document content type
+  const contentItem = isPdf
+    ? {
+        type: "document" as const,
+        source: {
+          type: "base64" as const,
+          media_type: "application/pdf" as const,
+          data: base64,
+        },
+      }
+    : {
+        type: "image" as const,
+        source: {
+          type: "base64" as const,
+          media_type: mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+          data: base64,
+        },
+      };
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -81,46 +157,56 @@ async function ocrWithClaude(base64: string, mediaType: string, apiKey: string):
     messages: [
       {
         role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
-              data: base64,
-            },
-          },
-          { type: "text", text: OCR_PROMPT },
-        ],
+        content: [contentItem, { type: "text", text: OCR_PROMPT }],
       },
     ],
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  const result = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-
-  return { result, provider: "claude" };
+  return { result: parseOCRText(text), provider: "claude" };
 }
 
-async function ocrWithGemini(base64: string, mimeType: string, apiKey: string): Promise<OCRResult> {
+async function ocrWithGemini(base64: string, mediaType: string, apiKey: string): Promise<OCRResult> {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
+  // Gemini doesn't support PDF directly — convert to image first
+  let imgBase64 = base64;
+  let imgType = mediaType;
+  if (mediaType === "application/pdf") {
+    const converted = await pdfToImageBase64(base64);
+    if (converted) {
+      imgBase64 = converted.base64;
+      imgType = converted.mediaType;
+    } else {
+      throw new Error("ไม่สามารถแปลง PDF เป็นรูปภาพได้ — กรุณาอัปโหลดเป็นรูปภาพแทน");
+    }
+  }
+
   const response = await model.generateContent([
-    { inlineData: { mimeType, data: base64 } },
+    { inlineData: { mimeType: imgType, data: imgBase64 } },
     { text: OCR_PROMPT },
   ]);
 
   const text = response.response.text();
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  const result = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-
-  return { result, provider: "gemini" };
+  return { result: parseOCRText(text), provider: "gemini" };
 }
 
 async function ocrWithChatGPT(base64: string, mediaType: string, apiKey: string): Promise<OCRResult> {
   const openai = new OpenAI({ apiKey });
+
+  // ChatGPT doesn't support PDF directly — convert to image first
+  let imgBase64 = base64;
+  let imgType = mediaType;
+  if (mediaType === "application/pdf") {
+    const converted = await pdfToImageBase64(base64);
+    if (converted) {
+      imgBase64 = converted.base64;
+      imgType = converted.mediaType;
+    } else {
+      throw new Error("ไม่สามารถแปลง PDF เป็นรูปภาพได้ — กรุณาอัปโหลดเป็นรูปภาพแทน");
+    }
+  }
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -132,7 +218,7 @@ async function ocrWithChatGPT(base64: string, mediaType: string, apiKey: string)
           {
             type: "image_url",
             image_url: {
-              url: `data:${mediaType};base64,${base64}`,
+              url: `data:${imgType};base64,${imgBase64}`,
               detail: "high",
             },
           },
@@ -143,10 +229,7 @@ async function ocrWithChatGPT(base64: string, mediaType: string, apiKey: string)
   });
 
   const text = response.choices[0]?.message?.content || "";
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  const result = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-
-  return { result, provider: "chatgpt" };
+  return { result: parseOCRText(text), provider: "chatgpt" };
 }
 
 function errorReason(error: unknown): "rate_limit" | "timeout" | "other" {
@@ -180,15 +263,13 @@ async function tryProvider(provider: Provider, base64: string, mediaType: string
 
 /**
  * Main OCR function with auto-switch fallback.
- * Rotation: primary → next available → next available.
- * Switches on ANY error (rate limit, timeout, network, etc.) when aiAutoSwitch is on.
+ * Rotation: primary → fallback1 → fallback2 on ANY error.
  */
 export async function performOCR(base64: string, mediaType: string): Promise<OCRResult> {
   const settings = await getAISettings();
   const primary = settings.aiProvider;
 
   const allProviders: Provider[] = ["claude", "gemini", "chatgpt"];
-  // Build rotation: primary first, then the rest in fixed order
   const rotation: Provider[] = [primary, ...allProviders.filter((p) => p !== primary)];
 
   const errors: { provider: Provider; reason: string }[] = [];
@@ -197,29 +278,24 @@ export async function performOCR(base64: string, mediaType: string): Promise<OCR
     const provider = rotation[i];
     const isFirst = i === 0;
 
-    // Only try fallbacks when auto-switch is enabled
     if (!isFirst && !settings.aiAutoSwitch) break;
 
     try {
       const result = await tryProvider(provider, base64, mediaType, settings);
       if (result !== null) {
         if (!isFirst) {
-          console.log(`[AI OCR] Auto-switched to ${provider} (fallback from ${errors.map((e) => e.provider).join(" → ")})`);
+          console.log(`[AI OCR] Auto-switched to ${provider} (after: ${errors.map((e) => e.provider).join(" → ")})`);
         }
         return result;
       }
-      // Provider not configured — skip silently
     } catch (error) {
-      const reason = errorReason(error);
-      const label = providerLabel(provider);
       const msg = error instanceof Error ? error.message : "Unknown error";
-      console.error(`[AI OCR] ${label} failed (${reason}): ${msg}`);
+      console.error(`[AI OCR] ${providerLabel(provider)} failed: ${msg}`);
       errors.push({ provider, reason: msg });
-      // Always continue to next provider when auto-switch is on
     }
   }
 
-  // All providers exhausted or none configured
+  // All exhausted
   const configuredCount = rotation.filter((p) => {
     if (p === "claude") return !!settings.claudeApiKey;
     if (p === "gemini") return !!settings.geminiApiKey;
@@ -232,21 +308,17 @@ export async function performOCR(base64: string, mediaType: string): Promise<OCR
   }
 
   if (errors.length === 1) {
-    const r = errors[0].reason;
+    const r = errorReason({ message: errors[0].reason } as Error);
     const label = providerLabel(errors[0].provider);
-    if (r.toLowerCase().includes("timeout") || r.includes("หมดเวลา")) {
-      return { result: null, provider: primary, error: `${label} ตอบสนองช้าเกินไป (timeout)` };
-    }
-    if (r.toLowerCase().includes("rate") || r.includes("quota")) {
-      return { result: null, provider: primary, error: `${label} ถึงขีดจำกัด (Rate Limit)${settings.aiAutoSwitch ? " — AI สำรองทั้งหมดไม่มี API Key" : " — เปิดสลับอัตโนมัติเพื่อใช้ AI สำรอง"}` };
-    }
-    return { result: null, provider: primary, error: `${label} ไม่สามารถใช้งานได้ชั่วคราว` };
+    if (r === "timeout") return { result: null, provider: primary, error: `${label} ตอบสนองช้าเกินไป (timeout)` };
+    if (r === "rate_limit") return { result: null, provider: primary, error: `${label} ถึงขีดจำกัด (Rate Limit)` };
+    return { result: null, provider: primary, error: errors[0].reason };
   }
 
   return {
     result: null,
     provider: primary,
-    error: `AI ทั้งหมด (${errors.map((e) => providerLabel(e.provider)).join(", ")}) ไม่สามารถใช้งานได้ชั่วคราว — กรุณาลองใหม่ภายหลัง`,
+    error: `AI ทั้งหมด (${errors.map((e) => providerLabel(e.provider)).join(", ")}) ไม่สามารถใช้งานได้ชั่วคราว`,
   };
 }
 

@@ -103,12 +103,16 @@ model Receipt {
   vendorName     String?
   vendorTaxId    String?
   vendorAddress  String?
-  currency       String        @default("THB")
-  totalAmount    Float         @default(0)
-  subtotal       Float         @default(0)
-  vat            Float         @default(0)
-  wht            Float         @default(0)
-  imageUrl       String?
+  currency        String        @default("THB")
+  totalAmount     Float         @default(0)
+  subtotal        Float         @default(0)
+  discount        Float         @default(0)
+  vat             Float         @default(0)
+  wht             Float         @default(0)
+  customerName    String?
+  customerTaxId   String?
+  customerAddress String?
+  imageUrl        String?
   status         String        @default("pending")
   note           String?
   emailSource    String?
