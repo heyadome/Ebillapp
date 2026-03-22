@@ -15,6 +15,7 @@ export async function GET() {
       aiAutoSwitch: true,
       claudeApiKey: true,
       geminiApiKey: true,
+      chatgptApiKey: true,
     },
   });
 
@@ -22,11 +23,12 @@ export async function GET() {
     settings: {
       aiProvider: business?.aiProvider || "claude",
       aiAutoSwitch: business?.aiAutoSwitch ?? true,
-      // Mask API keys for display (show last 8 chars)
       claudeApiKey: business?.claudeApiKey ? maskKey(business.claudeApiKey) : "",
       geminiApiKey: business?.geminiApiKey ? maskKey(business.geminiApiKey) : "",
+      chatgptApiKey: business?.chatgptApiKey ? maskKey(business.chatgptApiKey) : "",
       claudeConfigured: !!(business?.claudeApiKey || process.env.ANTHROPIC_API_KEY),
       geminiConfigured: !!(business?.geminiApiKey || process.env.GEMINI_API_KEY),
+      chatgptConfigured: !!(business?.chatgptApiKey || process.env.OPENAI_API_KEY),
     },
   });
 }
@@ -52,6 +54,9 @@ export async function PATCH(req: NextRequest) {
   }
   if (body.geminiApiKey !== undefined && !body.geminiApiKey.includes("••••")) {
     data.geminiApiKey = body.geminiApiKey || null;
+  }
+  if (body.chatgptApiKey !== undefined && !body.chatgptApiKey.includes("••••")) {
+    data.chatgptApiKey = body.chatgptApiKey || null;
   }
 
   await prisma.business.update({ where: { id: business.id }, data });

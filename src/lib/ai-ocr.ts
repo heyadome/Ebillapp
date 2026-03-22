@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 
 const OCR_PROMPT = `คุณเป็นผู้เชี่ยวชาญด้านการอ่านใบเสร็จและใบกำกับภาษีไทย
@@ -29,29 +30,46 @@ const OCR_PROMPT = `คุณเป็นผู้เชี่ยวชาญด
 
 ส่งกลับเฉพาะ JSON เท่านั้น ไม่ต้องมีข้อความอื่น หากไม่มีข้อมูลให้ใส่ null`;
 
+/** Timeout per provider in milliseconds */
+const PROVIDER_TIMEOUT_MS = 30_000;
+
+type Provider = "claude" | "gemini" | "chatgpt";
+
 interface OCRResult {
   result: Record<string, unknown> | null;
-  provider: "claude" | "gemini";
+  provider: Provider;
   error?: string;
 }
 
 interface AISettings {
-  aiProvider: string;
+  aiProvider: Provider;
   aiAutoSwitch: boolean;
   claudeApiKey: string | null;
   geminiApiKey: string | null;
+  chatgptApiKey: string | null;
 }
 
 async function getAISettings(): Promise<AISettings> {
   const business = await prisma.business.findFirst({
-    select: { aiProvider: true, aiAutoSwitch: true, claudeApiKey: true, geminiApiKey: true },
+    select: { aiProvider: true, aiAutoSwitch: true, claudeApiKey: true, geminiApiKey: true, chatgptApiKey: true },
   });
   return {
-    aiProvider: business?.aiProvider || "claude",
+    aiProvider: (business?.aiProvider || "claude") as Provider,
     aiAutoSwitch: business?.aiAutoSwitch ?? true,
     claudeApiKey: business?.claudeApiKey || process.env.ANTHROPIC_API_KEY || null,
     geminiApiKey: business?.geminiApiKey || process.env.GEMINI_API_KEY || null,
+    chatgptApiKey: business?.chatgptApiKey || process.env.OPENAI_API_KEY || null,
   };
+}
+
+/** Wraps a promise with a timeout. Throws if the timeout is exceeded. */
+function withTimeout<T>(promise: Promise<T>, ms: number, provider: Provider): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${providerLabel(provider)} หมดเวลา (timeout ${ms / 1000}s)`)), ms)
+    ),
+  ]);
 }
 
 async function ocrWithClaude(base64: string, mediaType: string, apiKey: string): Promise<OCRResult> {
@@ -90,9 +108,7 @@ async function ocrWithGemini(base64: string, mimeType: string, apiKey: string): 
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const response = await model.generateContent([
-    {
-      inlineData: { mimeType, data: base64 },
-    },
+    { inlineData: { mimeType, data: base64 } },
     { text: OCR_PROMPT },
   ]);
 
@@ -103,90 +119,139 @@ async function ocrWithGemini(base64: string, mimeType: string, apiKey: string): 
   return { result, provider: "gemini" };
 }
 
-function isRateLimitError(error: unknown): boolean {
-  if (error instanceof Error) {
-    const msg = error.message.toLowerCase();
-    return (
-      msg.includes("rate_limit") ||
-      msg.includes("rate limit") ||
-      msg.includes("429") ||
-      msg.includes("quota") ||
-      msg.includes("resource_exhausted") ||
-      msg.includes("overloaded")
-    );
+async function ocrWithChatGPT(base64: string, mediaType: string, apiKey: string): Promise<OCRResult> {
+  const openai = new OpenAI({ apiKey });
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    max_tokens: 2000,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:${mediaType};base64,${base64}`,
+              detail: "high",
+            },
+          },
+          { type: "text", text: OCR_PROMPT },
+        ],
+      },
+    ],
+  });
+
+  const text = response.choices[0]?.message?.content || "";
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const result = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+
+  return { result, provider: "chatgpt" };
+}
+
+function errorReason(error: unknown): "rate_limit" | "timeout" | "other" {
+  if (!(error instanceof Error)) return "other";
+  const msg = error.message.toLowerCase();
+  if (
+    msg.includes("rate_limit") ||
+    msg.includes("rate limit") ||
+    msg.includes("429") ||
+    msg.includes("quota") ||
+    msg.includes("resource_exhausted") ||
+    msg.includes("overloaded") ||
+    msg.includes("insufficient_quota")
+  ) return "rate_limit";
+  if (msg.includes("timeout") || msg.includes("หมดเวลา") || msg.includes("timed out") || msg.includes("etimedout")) return "timeout";
+  return "other";
+}
+
+async function tryProvider(provider: Provider, base64: string, mediaType: string, settings: AISettings): Promise<OCRResult | null> {
+  if (provider === "claude" && settings.claudeApiKey) {
+    return await withTimeout(ocrWithClaude(base64, mediaType, settings.claudeApiKey), PROVIDER_TIMEOUT_MS, provider);
   }
-  return false;
+  if (provider === "gemini" && settings.geminiApiKey) {
+    return await withTimeout(ocrWithGemini(base64, mediaType, settings.geminiApiKey), PROVIDER_TIMEOUT_MS, provider);
+  }
+  if (provider === "chatgpt" && settings.chatgptApiKey) {
+    return await withTimeout(ocrWithChatGPT(base64, mediaType, settings.chatgptApiKey), PROVIDER_TIMEOUT_MS, provider);
+  }
+  return null; // provider not configured
 }
 
 /**
- * Main OCR function with auto-switch fallback
+ * Main OCR function with auto-switch fallback.
+ * Rotation: primary → next available → next available.
+ * Switches on ANY error (rate limit, timeout, network, etc.) when aiAutoSwitch is on.
  */
 export async function performOCR(base64: string, mediaType: string): Promise<OCRResult> {
   const settings = await getAISettings();
-  const primary = settings.aiProvider as "claude" | "gemini";
+  const primary = settings.aiProvider;
 
-  // Determine which providers are available
-  const canUseClaude = !!settings.claudeApiKey;
-  const canUseGemini = !!settings.geminiApiKey;
+  const allProviders: Provider[] = ["claude", "gemini", "chatgpt"];
+  // Build rotation: primary first, then the rest in fixed order
+  const rotation: Provider[] = [primary, ...allProviders.filter((p) => p !== primary)];
 
-  if (!canUseClaude && !canUseGemini) {
-    return { result: null, provider: primary, error: "ไม่มี API Key ที่ตั้งค่าไว้ กรุณาตั้งค่า Claude AI หรือ Gemini AI" };
-  }
+  const errors: { provider: Provider; reason: string }[] = [];
 
-  // Try primary provider first
-  try {
-    if (primary === "claude" && canUseClaude) {
-      return await ocrWithClaude(base64, mediaType, settings.claudeApiKey!);
-    } else if (primary === "gemini" && canUseGemini) {
-      return await ocrWithGemini(base64, mediaType, settings.geminiApiKey!);
-    }
-  } catch (error) {
-    console.error(`Primary AI (${primary}) failed:`, error);
+  for (let i = 0; i < rotation.length; i++) {
+    const provider = rotation[i];
+    const isFirst = i === 0;
 
-    // Auto-switch to fallback if enabled
-    if (settings.aiAutoSwitch) {
-      const fallback = primary === "claude" ? "gemini" : "claude";
-      const canUseFallback = fallback === "claude" ? canUseClaude : canUseGemini;
+    // Only try fallbacks when auto-switch is enabled
+    if (!isFirst && !settings.aiAutoSwitch) break;
 
-      if (canUseFallback && isRateLimitError(error)) {
-        console.log(`Auto-switching to ${fallback} due to rate limit...`);
-        try {
-          if (fallback === "claude") {
-            return await ocrWithClaude(base64, mediaType, settings.claudeApiKey!);
-          } else {
-            return await ocrWithGemini(base64, mediaType, settings.geminiApiKey!);
-          }
-        } catch (fallbackError) {
-          console.error(`Fallback AI (${fallback}) also failed:`, fallbackError);
-          return {
-            result: null,
-            provider: fallback,
-            error: `ทั้ง ${primary} และ ${fallback} ไม่สามารถใช้งานได้`,
-          };
+    try {
+      const result = await tryProvider(provider, base64, mediaType, settings);
+      if (result !== null) {
+        if (!isFirst) {
+          console.log(`[AI OCR] Auto-switched to ${provider} (fallback from ${errors.map((e) => e.provider).join(" → ")})`);
         }
+        return result;
       }
+      // Provider not configured — skip silently
+    } catch (error) {
+      const reason = errorReason(error);
+      const label = providerLabel(provider);
+      const msg = error instanceof Error ? error.message : "Unknown error";
+      console.error(`[AI OCR] ${label} failed (${reason}): ${msg}`);
+      errors.push({ provider, reason: msg });
+      // Always continue to next provider when auto-switch is on
     }
-
-    return {
-      result: null,
-      provider: primary,
-      error: isRateLimitError(error)
-        ? `${primary === "claude" ? "Claude AI" : "Gemini AI"} ถึงขีดจำกัด (Rate Limit) ${settings.aiAutoSwitch ? "" : "— เปิดการสลับอัตโนมัติเพื่อใช้ AI สำรอง"}`
-        : `เกิดข้อผิดพลาดจาก ${primary === "claude" ? "Claude AI" : "Gemini AI"}`,
-    };
   }
 
-  // If primary not available, try whichever is available
-  try {
-    if (canUseClaude) {
-      return await ocrWithClaude(base64, mediaType, settings.claudeApiKey!);
-    }
-    if (canUseGemini) {
-      return await ocrWithGemini(base64, mediaType, settings.geminiApiKey!);
-    }
-  } catch (error) {
-    console.error("OCR error:", error);
+  // All providers exhausted or none configured
+  const configuredCount = rotation.filter((p) => {
+    if (p === "claude") return !!settings.claudeApiKey;
+    if (p === "gemini") return !!settings.geminiApiKey;
+    if (p === "chatgpt") return !!settings.chatgptApiKey;
+    return false;
+  }).length;
+
+  if (configuredCount === 0) {
+    return { result: null, provider: primary, error: "ไม่มี API Key ที่ตั้งค่าไว้ กรุณาตั้งค่า AI ในหน้าตั้งค่า" };
   }
 
-  return { result: null, provider: primary, error: "ไม่สามารถอ่านข้อมูลได้" };
+  if (errors.length === 1) {
+    const r = errors[0].reason;
+    const label = providerLabel(errors[0].provider);
+    if (r.toLowerCase().includes("timeout") || r.includes("หมดเวลา")) {
+      return { result: null, provider: primary, error: `${label} ตอบสนองช้าเกินไป (timeout)` };
+    }
+    if (r.toLowerCase().includes("rate") || r.includes("quota")) {
+      return { result: null, provider: primary, error: `${label} ถึงขีดจำกัด (Rate Limit)${settings.aiAutoSwitch ? " — AI สำรองทั้งหมดไม่มี API Key" : " — เปิดสลับอัตโนมัติเพื่อใช้ AI สำรอง"}` };
+    }
+    return { result: null, provider: primary, error: `${label} ไม่สามารถใช้งานได้ชั่วคราว` };
+  }
+
+  return {
+    result: null,
+    provider: primary,
+    error: `AI ทั้งหมด (${errors.map((e) => providerLabel(e.provider)).join(", ")}) ไม่สามารถใช้งานได้ชั่วคราว — กรุณาลองใหม่ภายหลัง`,
+  };
+}
+
+function providerLabel(p: Provider): string {
+  if (p === "claude") return "Claude AI";
+  if (p === "gemini") return "Gemini AI";
+  return "ChatGPT";
 }

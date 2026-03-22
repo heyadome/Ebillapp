@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   CheckCircle2, AlertCircle, Key, Eye, EyeOff, Save,
-  HardDrive, Sheet, Mail, Sparkles, Bot, Zap, RefreshCw
+  HardDrive, Sheet, Mail, Sparkles, Bot, Zap, RefreshCw, MessageSquare
 } from "lucide-react";
 
 interface Integration {
@@ -32,11 +32,14 @@ export default function SettingsPage() {
     aiAutoSwitch: true,
     claudeApiKey: "",
     geminiApiKey: "",
+    chatgptApiKey: "",
     claudeConfigured: false,
     geminiConfigured: false,
+    chatgptConfigured: false,
   });
   const [showClaudeKey, setShowClaudeKey] = useState(false);
   const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [showChatGPTKey, setShowChatGPTKey] = useState(false);
   const [aiSaving, setAiSaving] = useState(false);
   const [aiSaved, setAiSaved] = useState(false);
 
@@ -62,6 +65,7 @@ export default function SettingsPage() {
           aiAutoSwitch: aiSettings.aiAutoSwitch,
           claudeApiKey: aiSettings.claudeApiKey,
           geminiApiKey: aiSettings.geminiApiKey,
+          chatgptApiKey: aiSettings.chatgptApiKey,
         }),
       });
       if (res.ok) {
@@ -202,7 +206,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Provider Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 {/* Claude */}
                 <button
                   onClick={() => setAiSettings({ ...aiSettings, aiProvider: "claude" })}
@@ -245,6 +249,29 @@ export default function SettingsPage() {
                   <div className="mt-2">
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold" style={{ color: aiSettings.geminiConfigured ? "#10b981" : "#f59e0b" }}>
                       {aiSettings.geminiConfigured ? <><CheckCircle2 size={10} /> ตั้งค่าแล้ว</> : <><AlertCircle size={10} /> ยังไม่ได้ตั้งค่า</>}
+                    </span>
+                  </div>
+                </button>
+
+                {/* ChatGPT */}
+                <button
+                  onClick={() => setAiSettings({ ...aiSettings, aiProvider: "chatgpt" })}
+                  className="p-5 rounded-2xl text-left transition-all"
+                  style={{
+                    background: aiSettings.aiProvider === "chatgpt" ? "rgba(16,185,129,0.06)" : "var(--muted)",
+                    border: `2px solid ${aiSettings.aiProvider === "chatgpt" ? "#10b981" : "transparent"}`,
+                  }}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <MessageSquare size={20} style={{ color: "#10b981" }} />
+                    <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>ChatGPT</span>
+                    {aiSettings.aiProvider === "chatgpt" && (
+                      <span className="ml-auto badge text-[10px]" style={{ background: "#10b981", color: "white", padding: "2px 8px" }}>หลัก</span>
+                    )}
+                  </div>
+                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>OpenAI GPT-4o — แม่นยำ รองรับรูปภาพ</p>
+                  <div className="mt-2">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold" style={{ color: aiSettings.chatgptConfigured ? "#10b981" : "#f59e0b" }}>
+                      {aiSettings.chatgptConfigured ? <><CheckCircle2 size={10} /> ตั้งค่าแล้ว</> : <><AlertCircle size={10} /> ยังไม่ได้ตั้งค่า</>}
                     </span>
                   </div>
                 </button>
@@ -321,6 +348,30 @@ export default function SettingsPage() {
                   </div>
                   <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
                     ได้จาก <span style={{ color: "var(--accent)" }}>aistudio.google.com</span> — Free tier 15 req/min
+                  </p>
+                </div>
+
+                {/* ChatGPT API Key */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>
+                    <MessageSquare size={14} style={{ color: "#10b981" }} /> ChatGPT API Key
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showChatGPTKey ? "text" : "password"}
+                      value={aiSettings.chatgptApiKey}
+                      onChange={(e) => setAiSettings({ ...aiSettings, chatgptApiKey: e.target.value })}
+                      placeholder="sk-xxxxxxxxxxxxx"
+                      className="input-field pr-10"
+                    />
+                    <button type="button" onClick={() => setShowChatGPTKey(!showChatGPTKey)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      style={{ color: "var(--muted-foreground)" }}>
+                      {showChatGPTKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                    ได้จาก <span style={{ color: "var(--accent)" }}>platform.openai.com/api-keys</span> — ใช้ GPT-4o
                   </p>
                 </div>
               </div>

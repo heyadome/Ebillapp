@@ -63,6 +63,7 @@ model Business {
   aiAutoSwitch    Boolean  @default(true)
   claudeApiKey    String?
   geminiApiKey    String?
+  chatgptApiKey   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   users           BusinessUser[]
